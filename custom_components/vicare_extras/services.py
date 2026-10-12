@@ -72,10 +72,17 @@ def _identifier(hass: HomeAssistant, coordinator: Any, feature: str, device_id: 
     return matches[0]
 
 
-async def _run(hass: HomeAssistant, call: ServiceCall, feature: str, command: str, params: dict) -> None:
+async def _run(
+    hass: HomeAssistant,
+    call: ServiceCall,
+    feature: str,
+    command: str,
+    params: dict,
+    optimistic: dict | None = None,
+) -> None:
     coordinator = _coordinator(hass)
     ident = _identifier(hass, coordinator, feature, call.data.get("device_id"))
-    await async_execute(hass, coordinator, ident, feature, command, params)
+    await async_execute(hass, coordinator, ident, feature, command, params, optimistic)
 
 
 def async_register_services(hass: HomeAssistant) -> None:
@@ -93,6 +100,7 @@ def async_register_services(hass: HomeAssistant) -> None:
             HOLIDAY_PROGRAMS[call.data["program"]],
             "schedule",
             {"start": start.isoformat(), "end": end.isoformat()},
+            {"start": start.isoformat(), "end": end.isoformat()},
         )
 
     async def change_holiday_end(call: ServiceCall) -> None:
@@ -102,10 +110,18 @@ def async_register_services(hass: HomeAssistant) -> None:
             HOLIDAY_PROGRAMS[call.data["program"]],
             "changeEndDate",
             {"end": call.data["end"].isoformat()},
+            {"end": call.data["end"].isoformat()},
         )
 
     async def cancel_holiday(call: ServiceCall) -> None:
-        await _run(hass, call, HOLIDAY_PROGRAMS[call.data["program"]], "unschedule", {})
+        await _run(
+            hass,
+            call,
+            HOLIDAY_PROGRAMS[call.data["program"]],
+            "unschedule",
+            {},
+            {"active": False, "start": "", "end": ""},
+        )
 
     async def execute_command(call: ServiceCall) -> None:
         await _run(hass, call, call.data["feature"], call.data["command"], call.data["params"])

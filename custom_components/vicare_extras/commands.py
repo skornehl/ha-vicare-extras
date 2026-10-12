@@ -3,13 +3,15 @@
 Every command is checked against the definition the API itself ships with
 each feature (`commands.<name>.isExecutable` and `params.<p>.constraints`:
 min/max/stepping/enum/regEx/...) before anything is sent, so an invalid
-value never reaches the boiler. One command = one API call; afterwards the
-core coordinator is refreshed once (one more call) so the new state shows
-up immediately.
+value never reaches the boiler. One command = one API call; the new value
+is shown optimistically and confirmed by one refresh CONFIRM_DELAY seconds
+later (one more call).
 """
 
 from __future__ import annotations
 
+import asyncio
+import copy
 import logging
 import math
 import re
@@ -141,6 +143,12 @@ def validate_command(
     return clean
 
 
+# The API keeps reporting the old value for several seconds after a command
+# (measured: an immediate refresh still returned it). So: show the new value
+# optimistically right away and confirm with ONE refresh after this delay.
+CONFIRM_DELAY = 20
+
+
 async def async_execute(
     hass: HomeAssistant,
     coordinator: Any,
@@ -148,8 +156,13 @@ async def async_execute(
     feature_name: str,
     command: str,
     params: dict[str, Any] | None = None,
+    optimistic: dict[str, Any] | None = None,
 ) -> None:
-    """Validate and send one command, then refresh core + own data."""
+    """Validate and send one command, then update optimistically.
+
+    `optimistic` maps property names of the feature to the value they
+    should show until the delayed confirmation refresh.
+    """
     dev = (coordinator.data or {}).get(identifier)
     core = getattr(coordinator, "core_devices", {}).get(identifier)
     if dev is None or core is None:
@@ -165,6 +178,25 @@ async def async_execute(
         raise HomeAssistantError(
             f"ViCare hat '{feature_name}.{command}' abgelehnt: {err}"
         ) from err
-    if core.coordinator is not None:
-        await core.coordinator.async_refresh()
-    await coordinator.async_refresh()
+
+    if optimistic:
+        patched = copy.deepcopy(feature)
+        props = patched.setdefault("properties", {})
+        for pname, value in optimistic.items():
+            props.setdefault(pname, {})["value"] = value
+        dev.features[feature_name] = patched
+        coordinator.async_set_updated_data(coordinator.data)
+
+    pending = getattr(coordinator, "_vx_confirm_task", None)
+    if pending is not None and not pending.done():
+        pending.cancel()  # several writes in a row -> one confirmation
+
+    async def _confirm() -> None:
+        await asyncio.sleep(CONFIRM_DELAY)
+        if core.coordinator is not None:
+            await core.coordinator.async_refresh()
+        await coordinator.async_refresh()
+
+    coordinator._vx_confirm_task = hass.async_create_background_task(  # noqa: SLF001
+        _confirm(), f"vicare_extras confirm {feature_name}"
+    )

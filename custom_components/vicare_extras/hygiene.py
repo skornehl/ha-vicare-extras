@@ -69,8 +69,16 @@ class HygieneEntity(CoordinatorEntity[ViCareExtrasCoordinator]):
     def available(self) -> bool:
         return super().available and self.feature() is not None
 
-    async def run(self, feature: str, command: str, params: dict[str, Any] | None = None) -> None:
-        await async_execute(self.hass, self.coordinator, self._identifier, feature, command, params)
+    async def run(
+        self,
+        feature: str,
+        command: str,
+        params: dict[str, Any] | None = None,
+        optimistic: dict[str, Any] | None = None,
+    ) -> None:
+        await async_execute(
+            self.hass, self.coordinator, self._identifier, feature, command, params, optimistic
+        )
 
     # --- trigger helpers shared by select + time
     def trigger_state(self) -> tuple[int | None, int | None, list[str]]:
@@ -79,15 +87,27 @@ class HygieneEntity(CoordinatorEntity[ViCareExtrasCoordinator]):
             return None, None, []
         return prop(f, "startHour"), prop(f, "startMinute"), list(prop(f, "weekdays") or [])
 
+    def require_enabled(self) -> None:
+        f = self.feature(F_HYGIENE)
+        if f is not None and prop(f, "enabled") is False:
+            raise ServiceValidationError(
+                "Legionellenschutz ist deaktiviert - die Anlage meldet dann keinen "
+                "Startzeitpunkt. Bitte zuerst einschalten."
+            )
+
     async def set_trigger(self, hour: int, minute: int, weekdays: list[str]) -> None:
+        optimistic = {"startHour": hour, "startMinute": minute, "weekdays": weekdays}
         if len(weekdays) == 1:
             await self.run(
                 F_TRIGGER,
                 "triggerOncePerWeek",
                 {"startHour": hour, "startMinute": minute, "weekday": weekdays[0]},
+                optimistic,
             )
         else:
-            await self.run(F_TRIGGER, "triggerDaily", {"startHour": hour, "startMinute": minute})
+            await self.run(
+                F_TRIGGER, "triggerDaily", {"startHour": hour, "startMinute": minute}, optimistic
+            )
 
 
 # ---------------------------------------------------------------- switch
@@ -105,10 +125,10 @@ class HygieneSwitch(HygieneEntity, SwitchEntity):
         return None if f is None else bool(prop(f, "enabled"))
 
     async def async_turn_on(self, **kwargs: Any) -> None:
-        await self.run(F_HYGIENE, "setEnabled", {"enabled": True})
+        await self.run(F_HYGIENE, "setEnabled", {"enabled": True}, {"enabled": True})
 
     async def async_turn_off(self, **kwargs: Any) -> None:
-        await self.run(F_HYGIENE, "setEnabled", {"enabled": False})
+        await self.run(F_HYGIENE, "setEnabled", {"enabled": False}, {"enabled": False})
 
 
 # ---------------------------------------------------------------- button
@@ -122,7 +142,7 @@ class HygieneStartButton(HygieneEntity, ButtonEntity):
     _attr_entity_category = None
 
     async def async_press(self) -> None:
-        await self.run(F_HYGIENE, "activate")
+        await self.run(F_HYGIENE, "activate", None, {"active": True})
 
 
 # ---------------------------------------------------------------- number
@@ -159,7 +179,7 @@ class HygieneTemperature(HygieneEntity, NumberEntity):
         return None if f is None else prop(f, "value")
 
     async def async_set_native_value(self, value: float) -> None:
-        await self.run(F_TEMP, "setTemperature", {"targetTemperature": value})
+        await self.run(F_TEMP, "setTemperature", {"targetTemperature": value}, {"value": value})
 
 
 # ---------------------------------------------------------------- select
@@ -182,6 +202,7 @@ class HygieneDay(HygieneEntity, SelectEntity):
         return DAILY
 
     async def async_select_option(self, option: str) -> None:
+        self.require_enabled()
         hour, minute, _ = self.trigger_state()
         if hour is None or minute is None:
             raise ServiceValidationError("Aktueller Startzeitpunkt unbekannt")
@@ -206,6 +227,7 @@ class HygieneStartTime(HygieneEntity, TimeEntity):
         return time(int(hour), int(minute))
 
     async def async_set_value(self, value: time) -> None:
+        self.require_enabled()
         _, _, days = self.trigger_state()
         # The API only accepts minutes in 10-minute steps; validation in
         # commands.py rejects anything else with a clear message.
