@@ -1,0 +1,20 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "ViCare Extras",
+        "description": "Ergänzt die Funktionen der Viessmann-API, die die ViCare-Integration nicht anbietet. Nutzt den bestehenden ViCare-Login und dessen bereits geladene Daten – keine zusätzlichen API-Abrufe."
+      }
+    },
+    "abort": {
+      "no_vicare": "Bitte zuerst die ViCare-Integration einrichten.",
+      "single_instance_allowed": "ViCare Extras ist bereits eingerichtet."
+    }
+  },
+  "issues": {
+    "core_internals_changed": {
+      "title": "ViCare Extras kann die ViCare-Integration nicht lesen",
+      "description": "Der interne Aufbau der ViCare-Integration hat sich geändert (vermutlich durch ein Home-Assistant-Update), deshalb kann ViCare Extras ihre Daten nicht mehr lesen. Die ViCare-Integration selbst ist davon nicht betroffen. Bitte ViCare Extras aktualisieren. Fehler: {error}"
+    }
+  }
+}
