@@ -93,6 +93,96 @@
           "description": "ViCare-Gerät (optional)."
         }
       }
+    },
+    "set_schedule_day": {
+      "name": "Zeitprogramm-Tag(e) setzen",
+      "description": "Ersetzt die Zeiten eines oder mehrerer Tage, die übrigen Tage bleiben unverändert. Ohne mode wird der einzige erlaubte (on) bzw. normal verwendet.",
+      "fields": {
+        "schedule": {
+          "name": "Zeitprogramm",
+          "description": "heating (Heizkreis 1), heating_circuit_N, dhw (Warmwasser) oder circulation (Zirkulation)."
+        },
+        "days": {
+          "name": "Tage",
+          "description": "Welche Tage."
+        },
+        "entries": {
+          "name": "Zeiten",
+          "description": "Liste aus {start, end, mode?} als HH:MM, 10-Minuten-Raster, höchstens 4 pro Tag, ohne Überlappung."
+        },
+        "device_id": {
+          "name": "Gerät",
+          "description": "ViCare-Gerät (optional)."
+        }
+      }
+    },
+    "copy_schedule_day": {
+      "name": "Zeitprogramm-Tag kopieren",
+      "description": "Kopiert die Zeiten eines Tages auf andere Tage.",
+      "fields": {
+        "schedule": {
+          "name": "Zeitprogramm",
+          "description": "Welches Zeitprogramm."
+        },
+        "source_day": {
+          "name": "Von Tag",
+          "description": "Zu kopierender Tag."
+        },
+        "target_days": {
+          "name": "Auf Tage",
+          "description": "Zu überschreibende Tage."
+        },
+        "device_id": {
+          "name": "Gerät",
+          "description": "ViCare-Gerät (optional)."
+        }
+      }
+    },
+    "reset_schedule_day": {
+      "name": "Zeitprogramm-Tag zurücksetzen",
+      "description": "Setzt einen Tag auf die Werkseinstellung der Therme für dieses Zeitprogramm zurück.",
+      "fields": {
+        "schedule": {
+          "name": "Zeitprogramm",
+          "description": "Welches Zeitprogramm."
+        },
+        "day": {
+          "name": "Tag",
+          "description": "Zurückzusetzender Tag."
+        },
+        "device_id": {
+          "name": "Gerät",
+          "description": "ViCare-Gerät (optional)."
+        }
+      }
+    },
+    "reset_schedule": {
+      "name": "Ganzes Zeitprogramm zurücksetzen",
+      "description": "Setzt die ganze Woche eines Zeitprogramms auf Werkseinstellung. Nicht rückgängig zu machen – vorher mit get_schedule sichern.",
+      "fields": {
+        "schedule": {
+          "name": "Zeitprogramm",
+          "description": "Welches Zeitprogramm."
+        },
+        "device_id": {
+          "name": "Gerät",
+          "description": "ViCare-Gerät (optional)."
+        }
+      }
+    },
+    "get_schedule": {
+      "name": "Zeitprogramm abfragen",
+      "description": "Liefert ein Zeitprogramm (alle Tage, erlaubte Modi und Grenzen) als Antwort des Dienstes.",
+      "fields": {
+        "schedule": {
+          "name": "Zeitprogramm",
+          "description": "Welches Zeitprogramm."
+        },
+        "device_id": {
+          "name": "Gerät",
+          "description": "ViCare-Gerät (optional)."
+        }
+      }
     }
   },
   "selector": {
@@ -100,6 +190,24 @@
       "options": {
         "holiday": "Urlaub (abwesend)",
         "holiday_at_home": "Urlaub zu Hause"
+      }
+    },
+    "schedule": {
+      "options": {
+        "heating": "Heizkreis 1",
+        "dhw": "Warmwasser",
+        "circulation": "Zirkulation"
+      }
+    },
+    "day": {
+      "options": {
+        "mon": "Montag",
+        "tue": "Dienstag",
+        "wed": "Mittwoch",
+        "thu": "Donnerstag",
+        "fri": "Freitag",
+        "sat": "Samstag",
+        "sun": "Sonntag"
       }
     }
   }

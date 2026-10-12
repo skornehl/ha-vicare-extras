@@ -93,6 +93,96 @@
           "description": "ViCare device (optional)."
         }
       }
+    },
+    "set_schedule_day": {
+      "name": "Set schedule day(s)",
+      "description": "Replaces the time slots of one or more days of a schedule; other days stay as they are. Mode defaults to the only allowed one (on) or normal.",
+      "fields": {
+        "schedule": {
+          "name": "Schedule",
+          "description": "heating (circuit 1), heating_circuit_N, dhw or circulation."
+        },
+        "days": {
+          "name": "Days",
+          "description": "Days to set."
+        },
+        "entries": {
+          "name": "Time slots",
+          "description": "List of {start, end, mode?} in HH:MM, 10-minute steps, max. 4 per day, no overlap."
+        },
+        "device_id": {
+          "name": "Device",
+          "description": "ViCare device (optional)."
+        }
+      }
+    },
+    "copy_schedule_day": {
+      "name": "Copy schedule day",
+      "description": "Copies the time slots of one day to other days.",
+      "fields": {
+        "schedule": {
+          "name": "Schedule",
+          "description": "Which schedule."
+        },
+        "source_day": {
+          "name": "From day",
+          "description": "Day to copy."
+        },
+        "target_days": {
+          "name": "To days",
+          "description": "Days to overwrite."
+        },
+        "device_id": {
+          "name": "Device",
+          "description": "ViCare device (optional)."
+        }
+      }
+    },
+    "reset_schedule_day": {
+      "name": "Reset schedule day",
+      "description": "Resets one day to the boiler's factory default for that schedule.",
+      "fields": {
+        "schedule": {
+          "name": "Schedule",
+          "description": "Which schedule."
+        },
+        "day": {
+          "name": "Day",
+          "description": "Day to reset."
+        },
+        "device_id": {
+          "name": "Device",
+          "description": "ViCare device (optional)."
+        }
+      }
+    },
+    "reset_schedule": {
+      "name": "Reset whole schedule",
+      "description": "Resets the whole week of a schedule to the boiler's factory default. Cannot be undone - save it with get_schedule first.",
+      "fields": {
+        "schedule": {
+          "name": "Schedule",
+          "description": "Which schedule."
+        },
+        "device_id": {
+          "name": "Device",
+          "description": "ViCare device (optional)."
+        }
+      }
+    },
+    "get_schedule": {
+      "name": "Get schedule",
+      "description": "Returns a schedule (all days, allowed modes and limits) as service response.",
+      "fields": {
+        "schedule": {
+          "name": "Schedule",
+          "description": "Which schedule."
+        },
+        "device_id": {
+          "name": "Device",
+          "description": "ViCare device (optional)."
+        }
+      }
     }
   },
   "selector": {
@@ -100,6 +190,24 @@
       "options": {
         "holiday": "Holiday (away)",
         "holiday_at_home": "Holiday at home"
+      }
+    },
+    "schedule": {
+      "options": {
+        "heating": "Heating circuit 1",
+        "dhw": "Domestic hot water",
+        "circulation": "DHW circulation"
+      }
+    },
+    "day": {
+      "options": {
+        "mon": "Monday",
+        "tue": "Tuesday",
+        "wed": "Wednesday",
+        "thu": "Thursday",
+        "fri": "Friday",
+        "sat": "Saturday",
+        "sun": "Sunday"
       }
     }
   }

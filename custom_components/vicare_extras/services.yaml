@@ -78,3 +78,112 @@ execute_command:
       selector:
         device:
           integration: vicare
+
+set_schedule_day:
+  fields:
+    schedule:
+      required: true
+      default: dhw
+      selector:
+        select:
+          options:
+            - heating
+            - dhw
+            - circulation
+          custom_value: true
+          translation_key: schedule
+    days:
+      required: true
+      selector:
+        select:
+          multiple: true
+          options: [mon, tue, wed, thu, fri, sat, sun]
+          translation_key: day
+    entries:
+      required: true
+      example: '[{"start": "05:30", "end": "06:30"}, {"start": "17:00", "end": "22:00"}]'
+      selector:
+        object:
+    device_id:
+      selector:
+        device:
+          integration: vicare
+
+copy_schedule_day:
+  fields:
+    schedule:
+      required: true
+      default: dhw
+      selector:
+        select:
+          options: [heating, dhw, circulation]
+          custom_value: true
+          translation_key: schedule
+    source_day:
+      required: true
+      selector:
+        select:
+          options: [mon, tue, wed, thu, fri, sat, sun]
+          translation_key: day
+    target_days:
+      required: true
+      selector:
+        select:
+          multiple: true
+          options: [mon, tue, wed, thu, fri, sat, sun]
+          translation_key: day
+    device_id:
+      selector:
+        device:
+          integration: vicare
+
+reset_schedule_day:
+  fields:
+    schedule:
+      required: true
+      default: dhw
+      selector:
+        select:
+          options: [heating, dhw, circulation]
+          custom_value: true
+          translation_key: schedule
+    day:
+      required: true
+      selector:
+        select:
+          options: [mon, tue, wed, thu, fri, sat, sun]
+          translation_key: day
+    device_id:
+      selector:
+        device:
+          integration: vicare
+
+reset_schedule:
+  fields:
+    schedule:
+      required: true
+      default: dhw
+      selector:
+        select:
+          options: [heating, dhw, circulation]
+          custom_value: true
+          translation_key: schedule
+    device_id:
+      selector:
+        device:
+          integration: vicare
+
+get_schedule:
+  fields:
+    schedule:
+      required: true
+      default: dhw
+      selector:
+        select:
+          options: [heating, dhw, circulation]
+          custom_value: true
+          translation_key: schedule
+    device_id:
+      selector:
+        device:
+          integration: vicare

@@ -55,8 +55,21 @@ it is sent. One command costs one API call plus one refresh.
 | `vicare_extras.set_holiday` / `change_holiday_end` / `cancel_holiday` | `heating.operating.programs.holiday` / `holidayAtHome` |
 | `vicare_extras.execute_command` | any other command of any feature, same validation (blocked: factory reset) |
 
-Schedules can already be written via `execute_command` (`setSchedule` with
-`newSchedule`); dedicated services are planned.
+### Schedules (since v0.3)
+
+`schedule` is `heating` (circuit 1), `heating_circuit_N`, `dhw` or
+`circulation`. The API only accepts a whole week, so day-level services read
+the current week, change the requested days and send it back.
+
+| Service | What it does |
+|---|---|
+| `vicare_extras.set_schedule_day` | replace the slots of one or more days, e.g. `entries: [{start: "05:30", end: "06:30"}]` (mode defaults to `on` / `normal`) |
+| `vicare_extras.copy_schedule_day` | copy one day to other days |
+| `vicare_extras.reset_schedule_day` | reset one day to the boiler default |
+| `vicare_extras.reset_schedule` | reset the whole week (save it with `get_schedule` first) |
+| `vicare_extras.get_schedule` | return the week, allowed modes and limits as service response |
+
+Plus a sensor *Zeitprogramm … heute* per schedule showing today's slots.
 
 ## Installation
 

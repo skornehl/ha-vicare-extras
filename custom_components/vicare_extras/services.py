@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import date
+from types import SimpleNamespace
 from typing import Any
 
 import voluptuous as vol
@@ -13,6 +14,7 @@ from homeassistant.helpers import config_validation as cv, device_registry as dr
 
 from .commands import async_execute
 from .const import DOMAIN, VICARE_DOMAIN
+from .schedules import async_register_schedule_services
 
 HOLIDAY_PROGRAMS = {
     "holiday": "heating.operating.programs.holiday",
@@ -145,3 +147,6 @@ def async_register_services(hass: HomeAssistant) -> None:
     hass.services.async_register(DOMAIN, "change_holiday_end", change_holiday_end, SCHEMA_CHANGE_END)
     hass.services.async_register(DOMAIN, "cancel_holiday", cancel_holiday, SCHEMA_CANCEL)
     hass.services.async_register(DOMAIN, "execute_command", execute_command, SCHEMA_EXECUTE)
+    async_register_schedule_services(
+        hass, SimpleNamespace(_coordinator=_coordinator, _identifier=_identifier)
+    )

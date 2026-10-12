@@ -17,6 +17,8 @@ from dataclasses import dataclass, field
 import re
 from typing import Any
 
+from homeassistant.util import dt as dt_util
+
 from .const import (
     BURNER_STOP_DEFAULT_ON,
     BURNER_STOP_REASONS,
@@ -25,6 +27,7 @@ from .const import (
     is_excluded,
 )
 from .coordinator import ExtrasDevice
+from .schedules import format_day
 
 # Features represented by writable entities (switch/number/select/time).
 WRITABLE_FEATURES = {
@@ -86,6 +89,14 @@ def _count_entries(f: Feature) -> int | None:
 
 def _schedule_attrs(f: Feature) -> dict[str, Any]:
     return {"entries": prop(f, "entries")}
+
+
+def _schedule_today(f: Feature) -> str | None:
+    entries = prop(f, "entries")
+    if not isinstance(entries, dict):
+        return None
+    day = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"][dt_util.now().weekday()]
+    return format_day(entries.get(day) or [])
 
 
 def _holiday_attrs(f: Feature) -> dict[str, Any]:
@@ -285,6 +296,23 @@ def _curated(dev: ExtrasDevice) -> list[Spec]:
                     if m[2] == "reducedEnergySaving"
                     else None,
                     icon="mdi:leaf",
+                )
+            )
+    for fname in sorted(feats):
+        m = re.fullmatch(r"heating\.circuits\.(\d+)\.heating\.schedule", fname)
+        label = f"Heizkreis {m[1]}" if m else {
+            "heating.dhw.schedule": "Warmwasser",
+            "heating.dhw.pumps.circulation.schedule": "Zirkulation",
+        }.get(fname)
+        if label and has(fname):
+            specs.append(
+                Spec(
+                    key=f"{_slug(fname)}_today",
+                    platform="sensor",
+                    name=f"Zeitprogramm {label} heute",
+                    feature=fname,
+                    value_fn=_schedule_today,
+                    icon="mdi:calendar-today",
                 )
             )
     for fname, key, name in (
