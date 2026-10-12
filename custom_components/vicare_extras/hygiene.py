@@ -179,7 +179,8 @@ class HygieneTemperature(HygieneEntity, NumberEntity):
         return None if f is None else prop(f, "value")
 
     async def async_set_native_value(self, value: float) -> None:
-        await self.run(F_TEMP, "setTemperature", {"targetTemperature": value}, {"value": value})
+        v = int(value) if float(value).is_integer() else value
+        await self.run(F_TEMP, "setTemperature", {"targetTemperature": v}, {"value": v})
 
 
 # ---------------------------------------------------------------- select

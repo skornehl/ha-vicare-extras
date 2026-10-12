@@ -104,13 +104,28 @@ def async_register_services(hass: HomeAssistant) -> None:
         )
 
     async def change_holiday_end(call: ServiceCall) -> None:
-        await _run(
-            hass,
-            call,
-            HOLIDAY_PROGRAMS[call.data["program"]],
-            "changeEndDate",
-            {"end": call.data["end"].isoformat()},
-            {"end": call.data["end"].isoformat()},
+        feature = HOLIDAY_PROGRAMS[call.data["program"]]
+        end = call.data["end"].isoformat()
+        coordinator = _coordinator(hass)
+        ident = _identifier(hass, coordinator, feature, call.data.get("device_id"))
+        fdata = coordinator.data[ident].features.get(feature) or {}
+        executable = ((fdata.get("commands") or {}).get("changeEndDate") or {}).get(
+            "isExecutable", True
+        )
+        start = ((fdata.get("properties") or {}).get("start") or {}).get("value")
+        if not executable and start:
+            # The API only allows changeEndDate while the program is running;
+            # for a scheduled (not yet started) one, re-schedule it with the
+            # same start and the new end instead.
+            if end < start:
+                raise ServiceValidationError("Das neue Ende liegt vor dem Beginn")
+            await async_execute(
+                hass, coordinator, ident, feature, "schedule",
+                {"start": start, "end": end}, {"start": start, "end": end},
+            )
+            return
+        await async_execute(
+            hass, coordinator, ident, feature, "changeEndDate", {"end": end}, {"end": end}
         )
 
     async def cancel_holiday(call: ServiceCall) -> None:
