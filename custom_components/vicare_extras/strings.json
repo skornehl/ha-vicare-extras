@@ -108,7 +108,7 @@
         },
         "entries": {
           "name": "Time slots",
-          "description": "List of {start, end, mode?} in HH:MM, 10-minute steps, max. 4 per day, no overlap."
+          "description": "List of slots with start, end (HH:MM) and optional mode, 10-minute steps, max. 4 per day, no overlap."
         },
         "device_id": {
           "name": "Device",

@@ -108,7 +108,7 @@
         },
         "entries": {
           "name": "Zeiten",
-          "description": "Liste aus {start, end, mode?} als HH:MM, 10-Minuten-Raster, höchstens 4 pro Tag, ohne Überlappung."
+          "description": "Liste von Zeiten mit start, end (HH:MM) und optional mode, 10-Minuten-Raster, höchstens 4 pro Tag, ohne Überlappung."
         },
         "device_id": {
           "name": "Gerät",
