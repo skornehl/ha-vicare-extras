@@ -3,7 +3,13 @@
     "step": {
       "user": {
         "title": "ViCare Extras",
-        "description": "Ergänzt die Funktionen der Viessmann-API, die die ViCare-Integration nicht anbietet. Nutzt den bestehenden ViCare-Login und dessen bereits geladene Daten – keine zusätzlichen API-Abrufe."
+        "description": "Ergänzt die Funktionen der Viessmann-API, die die ViCare-Integration nicht anbietet. Nutzt den bestehenden ViCare-Login und dessen bereits geladene Daten – keine zusätzlichen API-Abrufe.",
+        "data": {
+          "calorific_value": "Brennwert (kWh/m³, optional)"
+        },
+        "data_description": {
+          "calorific_value": "Laut Gasrechnung. Aktiviert Gasenergie-Sensoren in kWh."
+        }
       }
     },
     "abort": {
@@ -208,6 +214,19 @@
         "fri": "Freitag",
         "sat": "Samstag",
         "sun": "Sonntag"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "ViCare Extras",
+        "data": {
+          "calorific_value": "Brennwert (kWh/m³)"
+        },
+        "data_description": {
+          "calorific_value": "Laut Gasrechnung. Leer lassen, um die Gasenergie-Sensoren abzuschalten."
+        }
       }
     }
   }

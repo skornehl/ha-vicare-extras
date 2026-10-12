@@ -8,6 +8,10 @@ from datetime import timedelta
 DOMAIN = "vicare_extras"
 VICARE_DOMAIN = "vicare"
 
+# Calorific value of the gas (kWh per m³, "Brennwert" on the gas bill).
+# Optional; when set, gas energy sensors in kWh are created.
+CONF_CALORIFIC_VALUE = "calorific_value"
+
 # How often the already-fetched PyViCare cache is re-read. This never
 # touches the network - the core integration owns all API traffic.
 SCAN_INTERVAL = timedelta(seconds=30)

@@ -13,6 +13,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
+from .const import CONF_CALORIFIC_VALUE
 from .coordinator import ViCareExtrasCoordinator
 from .descriptions import build_specs
 from .entity import ViCareExtrasEntity
@@ -22,10 +23,11 @@ async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     coordinator: ViCareExtrasCoordinator = entry.runtime_data
+    calorific = entry.options.get(CONF_CALORIFIC_VALUE)
     async_add_entities(
         ViCareExtrasSensor(coordinator, dev, spec)
         for dev in coordinator.data.values()
-        for spec in build_specs(dev)
+        for spec in build_specs(dev, calorific)
         if spec.platform == "sensor"
     )
 

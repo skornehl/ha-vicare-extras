@@ -110,7 +110,8 @@ def _curated(dev: ExtrasDevice) -> list[Spec]:
     def has(name: str) -> bool:
         return name in feats and feats[name].get("isEnabled", True)
 
-    # --- heat produced (kWh); with gas m³ this gives the boiler efficiency
+    # --- heat produced (kWh). Viessmann derives this as gas m³ x 10 kWh/m³,
+    # it is an estimate, not a measurement (see _gas_energy).
     for circuit, label in (("heating", "Heizung"), ("dhw", "Warmwasser")):
         fname = f"heating.heat.production.summary.{circuit}"
         if not has(fname):
@@ -135,6 +136,7 @@ def _curated(dev: ExtrasDevice) -> list[Spec]:
                     state_class="total_increasing" if total else None,
                     enabled_default=on,
                     icon="mdi:fire",
+                    attrs_fn=lambda f: {"hinweis": "Viessmann-Schätzung: Gas m³ × 10 kWh/m³, nicht gemessen"},
                 )
             )
 
@@ -437,8 +439,52 @@ def _as_text(value: Any) -> str | None:
     return text[:255]
 
 
-def build_specs(dev: ExtrasDevice) -> list[Spec]:
+def _gas_energy(dev: ExtrasDevice, calorific: float | None) -> list[Spec]:
+    """Gas energy in kWh = m³ x calorific value (from the gas bill).
+
+    Note: Viessmann's own "heat production" is NOT measured - it is exactly
+    gas m³ x 10 kWh/m³ (verified on a Vitodens 200, 2025 and 2026 data), so
+    an efficiency ratio would always be constant. This is the real energy
+    input instead.
+    """
+    if not calorific:
+        return []
+    specs: list[Spec] = []
+    for circuit, label in (("heating", "Heizung"), ("dhw", "Warmwasser")):
+        fname = f"heating.gas.consumption.summary.{circuit}"
+        if fname not in dev.features:
+            continue
+        for p, plabel, total, on in (
+            ("currentDay", "heute", True, True),
+            ("currentMonth", "diesen Monat", True, True),
+            ("lastMonth", "letzten Monat", False, False),
+            ("currentYear", "dieses Jahr", True, True),
+            ("lastYear", "letztes Jahr", False, False),
+        ):
+            specs.append(
+                Spec(
+                    key=f"gas_energy_{circuit}_{p}",
+                    platform="sensor",
+                    name=f"Gasenergie {label} {plabel}",
+                    feature=fname,
+                    value_fn=(
+                        lambda f, p=p: None
+                        if prop(f, p) is None
+                        else round(prop(f, p) * calorific, 2)
+                    ),
+                    attrs_fn=(lambda f, p=p: {"gas_m3": prop(f, p), "calorific_value": calorific}),
+                    unit="kWh",
+                    device_class="energy" if total else None,
+                    state_class="total_increasing" if total else None,
+                    enabled_default=on,
+                    icon="mdi:fire",
+                )
+            )
+    return specs
+
+
+def build_specs(dev: ExtrasDevice, calorific: float | None = None) -> list[Spec]:
     """Return all entity specs for one device."""
-    curated = _curated(dev)
-    handled = {s.feature for s in curated} | WRITABLE_FEATURES
+    curated = _curated(dev) + _gas_energy(dev, calorific)
+    handled = {s.feature for s in curated if not s.key.startswith("gas_energy_")} | WRITABLE_FEATURES
     return curated + _generic(dev, handled)

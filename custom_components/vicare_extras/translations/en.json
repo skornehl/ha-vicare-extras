@@ -3,7 +3,13 @@
     "step": {
       "user": {
         "title": "ViCare Extras",
-        "description": "Adds the Viessmann API features the core ViCare integration does not expose. Uses the existing ViCare login and its already fetched data - no extra API calls."
+        "description": "Adds the Viessmann API features the core ViCare integration does not expose. Uses the existing ViCare login and its already fetched data - no extra API calls.",
+        "data": {
+          "calorific_value": "Calorific value (kWh/m³, optional)"
+        },
+        "data_description": {
+          "calorific_value": "From your gas bill (Brennwert). Enables gas energy sensors in kWh."
+        }
       }
     },
     "abort": {
@@ -208,6 +214,19 @@
         "fri": "Friday",
         "sat": "Saturday",
         "sun": "Sunday"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "ViCare Extras",
+        "data": {
+          "calorific_value": "Calorific value (kWh/m³)"
+        },
+        "data_description": {
+          "calorific_value": "From your gas bill (Brennwert). Leave empty to disable the gas energy sensors."
+        }
       }
     }
   }

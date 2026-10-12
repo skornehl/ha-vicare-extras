@@ -24,7 +24,7 @@ Enabled by default (tested on a Vitodens 200 / E3):
 
 | Entity | Feature |
 |---|---|
-| Heat produced, heating and DHW (today / month / year) | `heating.heat.production.summary.*` |
+| Heat produced, heating and DHW (today / month / year) - **an estimate**: Viessmann derives it as gas m³ × 10 kWh/m³, it is not measured | `heating.heat.production.summary.*` |
 | Hydraulic separator temperature | `heating.sensors.temperature.hydraulicSeparator` (the core entity stays empty on gas boilers) |
 | Malfunction, external locks | `device.lock.*`, `heating.external.lock` |
 | Status / service / info messages (count + entries) | `device.messages.*.raw` |
@@ -70,6 +70,16 @@ the current week, change the requested days and send it back.
 | `vicare_extras.get_schedule` | return the week, allowed modes and limits as service response |
 
 Plus a sensor *Zeitprogramm … heute* per schedule showing today's slots.
+
+### Gas energy (since v0.4)
+
+Set the calorific value (*Brennwert*, kWh/m³, from your gas bill) in the
+integration options to get **gas energy in kWh** (today / month / year,
+heating and DHW) = gas m³ × calorific value - the real energy input.
+
+Why not an efficiency sensor: Viessmann's "heat production" is exactly
+gas m³ × 10 kWh/m³ (checked against two years of data), so heat/gas would
+always be the same constant.
 
 ## Installation
 
