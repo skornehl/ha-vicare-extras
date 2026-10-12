@@ -94,6 +94,9 @@ class ViCareExtrasCoordinator(DataUpdateCoordinator[dict[str, ExtrasDevice]]):
             name=DOMAIN,
             update_interval=SCAN_INTERVAL,
         )
+        self.core_devices = {}
+
+    core_devices: dict[str, Any]
 
     async def _async_update_data(self) -> dict[str, ExtrasDevice]:
         vicare = _vicare_entry(self.hass)
@@ -101,7 +104,19 @@ class ViCareExtrasCoordinator(DataUpdateCoordinator[dict[str, ExtrasDevice]]):
             raise UpdateFailed("ViCare integration is not loaded")
         try:
             devices = vicare.runtime_data.devices
-            data = {d.identifier: d for d in map(_read_device, devices)}
+            data: dict[str, ExtrasDevice] = {}
+            core: dict[str, Any] = {}
+            for dev in devices:
+                snap = _read_device(dev)
+                core[snap.identifier] = dev
+                previous = (self.data or {}).get(snap.identifier)
+                if not snap.features and previous is not None:
+                    # PyViCare empties its cache after every write command
+                    # until the core coordinator fetches again - keep the
+                    # last known values instead of going unavailable.
+                    snap = previous
+                data[snap.identifier] = snap
+            self.core_devices = core
         except (AttributeError, CoreInternalsChanged) as err:
             ir.async_create_issue(
                 self.hass,

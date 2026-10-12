@@ -21,11 +21,17 @@ from .const import (
     BURNER_STOP_DEFAULT_ON,
     BURNER_STOP_REASONS,
     UNITS,
-    WEEKDAYS_DE,
     is_covered,
     is_excluded,
 )
 from .coordinator import ExtrasDevice
+
+# Features represented by writable entities (switch/number/select/time).
+WRITABLE_FEATURES = {
+    "heating.dhw.hygiene",
+    "heating.dhw.hygiene.trigger",
+    "heating.dhw.temperature.hygiene",
+}
 
 Feature = dict[str, Any]
 
@@ -84,23 +90,6 @@ def _schedule_attrs(f: Feature) -> dict[str, Any]:
 
 def _holiday_attrs(f: Feature) -> dict[str, Any]:
     return {"start": prop(f, "start") or None, "end": prop(f, "end") or None}
-
-
-def _hygiene_trigger(f: Feature) -> str | None:
-    hour, minute = prop(f, "startHour"), prop(f, "startMinute")
-    if hour is None or minute is None:
-        return None
-    days = prop(f, "weekdays") or []
-    label = ", ".join(WEEKDAYS_DE.get(d, d) for d in days) if days else "täglich"
-    return f"{label} {int(hour):02d}:{int(minute):02d}"
-
-
-def _hygiene_trigger_attrs(f: Feature) -> dict[str, Any]:
-    return {
-        "start_hour": prop(f, "startHour"),
-        "start_minute": prop(f, "startMinute"),
-        "weekdays": prop(f, "weekdays"),
-    }
 
 
 def _curated(dev: ExtrasDevice) -> list[Spec]:
@@ -226,17 +215,11 @@ def _curated(dev: ExtrasDevice) -> list[Spec]:
                     )
                 )
 
-    # --- DHW hygiene (legionella protection)
+    # --- DHW hygiene (legionella protection): enabled/temperature/time are
+    # writable entities (switch, number, select, time); only "running" is
+    # read-only here.
     if has("heating.dhw.hygiene"):
-        specs += [
-            Spec(
-                key="dhw_hygiene_enabled",
-                platform="binary_sensor",
-                name="Legionellenschutz aktiviert",
-                feature="heating.dhw.hygiene",
-                value_fn=_value("enabled"),
-                icon="mdi:bacteria-outline",
-            ),
+        specs.append(
             Spec(
                 key="dhw_hygiene_active",
                 platform="binary_sensor",
@@ -244,31 +227,6 @@ def _curated(dev: ExtrasDevice) -> list[Spec]:
                 feature="heating.dhw.hygiene",
                 value_fn=_active,
                 device_class="running",
-            ),
-        ]
-    if has("heating.dhw.hygiene.trigger"):
-        specs.append(
-            Spec(
-                key="dhw_hygiene_trigger",
-                platform="sensor",
-                name="Legionellenschutz Zeitpunkt",
-                feature="heating.dhw.hygiene.trigger",
-                value_fn=_hygiene_trigger,
-                attrs_fn=_hygiene_trigger_attrs,
-                icon="mdi:calendar-clock",
-            )
-        )
-    if has("heating.dhw.temperature.hygiene"):
-        specs.append(
-            Spec(
-                key="dhw_hygiene_temperature",
-                platform="sensor",
-                name="Legionellenschutz Temperatur",
-                feature="heating.dhw.temperature.hygiene",
-                value_fn=_value("value"),
-                unit="°C",
-                device_class="temperature",
-                state_class="measurement",
             )
         )
 
@@ -454,5 +412,5 @@ def _as_text(value: Any) -> str | None:
 def build_specs(dev: ExtrasDevice) -> list[Spec]:
     """Return all entity specs for one device."""
     curated = _curated(dev)
-    handled = {s.feature for s in curated}
+    handled = {s.feature for s in curated} | WRITABLE_FEATURES
     return curated + _generic(dev, handled)

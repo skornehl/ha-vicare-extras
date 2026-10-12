@@ -1,0 +1,80 @@
+set_holiday:
+  fields:
+    program:
+      required: true
+      default: holiday
+      selector:
+        select:
+          options:
+            - holiday
+            - holiday_at_home
+          translation_key: program
+    start:
+      required: true
+      selector:
+        date:
+    end:
+      required: true
+      selector:
+        date:
+    device_id:
+      selector:
+        device:
+          integration: vicare
+
+change_holiday_end:
+  fields:
+    program:
+      required: true
+      default: holiday
+      selector:
+        select:
+          options:
+            - holiday
+            - holiday_at_home
+          translation_key: program
+    end:
+      required: true
+      selector:
+        date:
+    device_id:
+      selector:
+        device:
+          integration: vicare
+
+cancel_holiday:
+  fields:
+    program:
+      required: true
+      default: holiday
+      selector:
+        select:
+          options:
+            - holiday
+            - holiday_at_home
+          translation_key: program
+    device_id:
+      selector:
+        device:
+          integration: vicare
+
+execute_command:
+  fields:
+    feature:
+      required: true
+      example: heating.dhw.temperature.hygiene
+      selector:
+        text:
+    command:
+      required: true
+      example: setTemperature
+      selector:
+        text:
+    params:
+      example: '{"targetTemperature": 65}'
+      selector:
+        object:
+    device_id:
+      selector:
+        device:
+          integration: vicare

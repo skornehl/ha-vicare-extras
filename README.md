@@ -16,7 +16,9 @@ It is an **add-on to the core integration, not a replacement**:
   polling would hit the rate limit
 - entities are attached to the existing ViCare devices
 
-## What you get (v0.1, read-only)
+## What you get
+
+### Read (since v0.1)
 
 Enabled by default (tested on a Vitodens 200 / E3):
 
@@ -27,7 +29,7 @@ Enabled by default (tested on a Vitodens 200 / E3):
 | Malfunction, external locks | `device.lock.*`, `heating.external.lock` |
 | Status / service / info messages (count + entries) | `device.messages.*.raw` |
 | Burner stop counters by reason | `device.timeseries.burner.stops` |
-| Legionella protection: enabled, running, time, temperature | `heating.dhw.hygiene*` |
+| Legionella protection running | `heating.dhw.hygiene` |
 | Holiday / holiday at home (with start/end) | `heating.operating.programs.holiday*` |
 | Schedules for heating circuit, DHW, circulation (entries as attributes) | `*.schedule` |
 | Forced-from-schedule, energy saving (with reason), summer eco | `heating.circuits.N.operating.programs.*` |
@@ -38,7 +40,23 @@ cover is created as a **disabled diagnostic entity**, so everything the API
 reports is reachable. Excluded on purpose: `device.setDefaultValues`
 (factory reset), house location, daylight saving, serial numbers.
 
-Writing (hygiene, holiday, schedules) is planned for later versions.
+### Write (since v0.2)
+
+Every command is validated against the definition the API ships with the
+feature (`isExecutable`, min/max/stepping/enum/regEx, schedule rules) before
+it is sent. One command costs one API call plus one refresh.
+
+| Entity / service | Command |
+|---|---|
+| Switch *Legionellenschutz* | `heating.dhw.hygiene` `setEnabled` |
+| Button *Legionellenschutz jetzt starten* | `heating.dhw.hygiene` `activate` |
+| Number *Legionellenschutz Temperatur* | `heating.dhw.temperature.hygiene` `setTemperature` |
+| Select *Legionellenschutz Tag* (daily or a weekday) + Time *Startzeit* (10-minute steps) | `heating.dhw.hygiene.trigger` `triggerDaily` / `triggerOncePerWeek` |
+| `vicare_extras.set_holiday` / `change_holiday_end` / `cancel_holiday` | `heating.operating.programs.holiday` / `holidayAtHome` |
+| `vicare_extras.execute_command` | any other command of any feature, same validation (blocked: factory reset) |
+
+Schedules can already be written via `execute_command` (`setSchedule` with
+`newSchedule`); dedicated services are planned.
 
 ## Installation
 

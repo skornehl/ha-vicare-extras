@@ -16,5 +16,91 @@
       "title": "ViCare Extras kann die ViCare-Integration nicht lesen",
       "description": "Der interne Aufbau der ViCare-Integration hat sich geändert (vermutlich durch ein Home-Assistant-Update), deshalb kann ViCare Extras ihre Daten nicht mehr lesen. Die ViCare-Integration selbst ist davon nicht betroffen. Bitte ViCare Extras aktualisieren. Fehler: {error}"
     }
+  },
+  "services": {
+    "set_holiday": {
+      "name": "Urlaubsprogramm planen",
+      "description": "Plant das Urlaubsprogramm (oder Urlaub zu Hause) der Therme für einen Zeitraum.",
+      "fields": {
+        "program": {
+          "name": "Programm",
+          "description": "holiday = abwesend, holiday_at_home = zu Hause"
+        },
+        "start": {
+          "name": "Beginn",
+          "description": "Erster Tag."
+        },
+        "end": {
+          "name": "Ende",
+          "description": "Letzter Tag."
+        },
+        "device_id": {
+          "name": "Gerät",
+          "description": "ViCare-Gerät (optional, sonst das passende)."
+        }
+      }
+    },
+    "change_holiday_end": {
+      "name": "Urlaubsende ändern",
+      "description": "Verschiebt das Enddatum eines geplanten Urlaubsprogramms.",
+      "fields": {
+        "program": {
+          "name": "Programm",
+          "description": "Welches Programm."
+        },
+        "end": {
+          "name": "Ende",
+          "description": "Neuer letzter Tag."
+        },
+        "device_id": {
+          "name": "Gerät",
+          "description": "ViCare-Gerät (optional)."
+        }
+      }
+    },
+    "cancel_holiday": {
+      "name": "Urlaubsprogramm abbrechen",
+      "description": "Bricht ein geplantes oder laufendes Urlaubsprogramm ab.",
+      "fields": {
+        "program": {
+          "name": "Programm",
+          "description": "Welches Programm."
+        },
+        "device_id": {
+          "name": "Gerät",
+          "description": "ViCare-Gerät (optional)."
+        }
+      }
+    },
+    "execute_command": {
+      "name": "ViCare-Befehl ausführen",
+      "description": "Führt einen beliebigen Befehl aus, den die ViCare-API für ein Feature anbietet. Die Parameter werden vor dem Senden gegen die Grenzen der API geprüft.",
+      "fields": {
+        "feature": {
+          "name": "Feature",
+          "description": "Feature-Name, z.B. heating.dhw.temperature.hygiene."
+        },
+        "command": {
+          "name": "Befehl",
+          "description": "Befehlsname, z.B. setTemperature."
+        },
+        "params": {
+          "name": "Parameter",
+          "description": "Parameter als Objekt."
+        },
+        "device_id": {
+          "name": "Gerät",
+          "description": "ViCare-Gerät (optional)."
+        }
+      }
+    }
+  },
+  "selector": {
+    "program": {
+      "options": {
+        "holiday": "Urlaub (abwesend)",
+        "holiday_at_home": "Urlaub zu Hause"
+      }
+    }
   }
 }

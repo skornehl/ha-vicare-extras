@@ -16,5 +16,91 @@
       "title": "ViCare Extras cannot read the ViCare integration",
       "description": "The internal structure of the core ViCare integration changed (probably after a Home Assistant update), so ViCare Extras cannot read its data any more. The core integration itself is unaffected. Please update ViCare Extras. Error: {error}"
     }
+  },
+  "services": {
+    "set_holiday": {
+      "name": "Schedule holiday program",
+      "description": "Schedules the boiler's holiday (or holiday at home) program for a date range.",
+      "fields": {
+        "program": {
+          "name": "Program",
+          "description": "holiday = away, holiday_at_home = at home"
+        },
+        "start": {
+          "name": "Start",
+          "description": "First day."
+        },
+        "end": {
+          "name": "End",
+          "description": "Last day."
+        },
+        "device_id": {
+          "name": "Device",
+          "description": "ViCare device (optional, defaults to the one that supports it)."
+        }
+      }
+    },
+    "change_holiday_end": {
+      "name": "Change holiday end",
+      "description": "Moves the end date of a scheduled holiday program.",
+      "fields": {
+        "program": {
+          "name": "Program",
+          "description": "Which program."
+        },
+        "end": {
+          "name": "End",
+          "description": "New last day."
+        },
+        "device_id": {
+          "name": "Device",
+          "description": "ViCare device (optional)."
+        }
+      }
+    },
+    "cancel_holiday": {
+      "name": "Cancel holiday program",
+      "description": "Cancels a scheduled or running holiday program.",
+      "fields": {
+        "program": {
+          "name": "Program",
+          "description": "Which program."
+        },
+        "device_id": {
+          "name": "Device",
+          "description": "ViCare device (optional)."
+        }
+      }
+    },
+    "execute_command": {
+      "name": "Execute ViCare command",
+      "description": "Runs any command the ViCare API offers for a feature. Parameters are validated against the API's own constraints before sending.",
+      "fields": {
+        "feature": {
+          "name": "Feature",
+          "description": "Feature name, e.g. heating.dhw.temperature.hygiene."
+        },
+        "command": {
+          "name": "Command",
+          "description": "Command name, e.g. setTemperature."
+        },
+        "params": {
+          "name": "Parameters",
+          "description": "Command parameters as an object."
+        },
+        "device_id": {
+          "name": "Device",
+          "description": "ViCare device (optional)."
+        }
+      }
+    }
+  },
+  "selector": {
+    "program": {
+      "options": {
+        "holiday": "Holiday (away)",
+        "holiday_at_home": "Holiday at home"
+      }
+    }
   }
 }
