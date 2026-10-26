@@ -53,6 +53,11 @@ def _vicare_entry(hass: HomeAssistant) -> ConfigEntry | None:
 def _device_identifier(dev: Any) -> str:
     """Mirror the core integration's device identifier (vicare/entity.py)."""
     gateway_serial = dev.config.getConfig().serial
+    if not hasattr(dev, "serial"):
+        # ViCare up to HA 2024.6 (still used by old manually installed copies,
+        # issue #1) had no per-device serial and identified the device by the
+        # gateway serial alone.
+        return gateway_serial
     if dev.serial is not None:
         return f"{gateway_serial}_{dev.serial.replace('-', '_')}"
     return f"{gateway_serial}_{dev.config.getId()}"
