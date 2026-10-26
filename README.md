@@ -26,6 +26,8 @@ Enabled by default (tested on a Vitodens 200 / E3):
 |---|---|
 | Heat produced, heating and DHW (today / month / year) - **an estimate**: Viessmann derives it as gas m³ × 10 kWh/m³, it is not measured | `heating.heat.production.summary.*` |
 | Hydraulic separator temperature | `heating.sensors.temperature.hydraulicSeparator` (the core entity stays empty on gas boilers) |
+| Target supply temperature per heating circuit | `heating.circuits.{x}.temperature` (core only reads it device-wide, so it never shows up) |
+| Internal boiler pump (running) and its set output in % | `heating.boiler.pumps.internal`, `heating.boiler.pumps.internal.target` |
 | Malfunction, external locks | `device.lock.*`, `heating.external.lock` |
 | Status / service / info messages (count + entries) | `device.messages.*.raw` |
 | Burner stop counters by reason | `device.timeseries.burner.stops` |

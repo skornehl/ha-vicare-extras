@@ -49,7 +49,8 @@ _COVERED_TEMPLATES = (
     "heating.circuits.{x}.operating.programs.{x}",
     "heating.circuits.{x}.sensors.temperature.room",
     "heating.circuits.{x}.sensors.temperature.supply",
-    "heating.circuits.{x}.temperature",
+    # heating.circuits.{x}.temperature is NOT covered: core reads it only via
+    # the device-level getTargetTemperature(), which has no circuit.
     "heating.dhw",
     "heating.dhw.charging",
     "heating.dhw.oneTimeCharge",
