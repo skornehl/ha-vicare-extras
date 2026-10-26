@@ -107,9 +107,13 @@ def _normalize(day_entries: list[dict[str, Any]], constraints: dict[str, Any]) -
 
 
 def format_day(entries: list[dict[str, Any]]) -> str:
-    """Human readable: '05:30–06:30, 17:00–22:00 (comfort)'."""
+    """Human readable: '05:30–06:30, 17:00–22:00 (comfort)'.
+
+    An empty day is a plain dash: the state is free text and cannot be
+    translated by Home Assistant, so it must not depend on a language.
+    """
     if not entries:
-        return "keine Zeiten"
+        return "–"
     parts = []
     for e in sorted(entries, key=lambda x: x.get("start", "")):
         mode = e.get("mode")
