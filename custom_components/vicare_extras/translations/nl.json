@@ -1,0 +1,358 @@
+{
+  "entity": {
+    "sensor": {
+      "boiler_pump_internal_target": {
+        "name": "Doelvermogen ketelpomp"
+      },
+      "boiler_target_temperature": {
+        "name": "Doeltemperatuur ketel"
+      },
+      "burner_stops_flamelossduringoperation_allstops": {
+        "name": "Branderstops: Vlamverlies tijdens bedrijf (totaal)"
+      },
+      "burner_stops_flamelossduringoperation_laststops": {
+        "name": "Branderstops: Vlamverlies tijdens bedrijf (laatst)"
+      },
+      "burner_stops_fluegastemperaturesensor_allstops": {
+        "name": "Branderstops: Rookgastemperatuursensor (totaal)"
+      },
+      "burner_stops_fluegastemperaturesensor_laststops": {
+        "name": "Branderstops: Rookgastemperatuursensor (laatst)"
+      },
+      "burner_stops_ionizationalignment_allstops": {
+        "name": "Branderstops: Ionisatiekalibratie (totaal)"
+      },
+      "burner_stops_ionizationalignment_laststops": {
+        "name": "Branderstops: Ionisatiekalibratie (laatst)"
+      },
+      "burner_stops_nogasatstart_allstops": {
+        "name": "Branderstops: Geen gas bij start (totaal)"
+      },
+      "burner_stops_nogasatstart_laststops": {
+        "name": "Branderstops: Geen gas bij start (laatst)"
+      },
+      "burner_stops_noignitionatstart_allstops": {
+        "name": "Branderstops: Geen ontsteking bij start (totaal)"
+      },
+      "burner_stops_noignitionatstart_laststops": {
+        "name": "Branderstops: Geen ontsteking bij start (laatst)"
+      },
+      "burner_stops_noionizationatstart_allstops": {
+        "name": "Branderstops: Geen ionisatie bij start (totaal)"
+      },
+      "burner_stops_noionizationatstart_laststops": {
+        "name": "Branderstops: Geen ionisatie bij start (laatst)"
+      },
+      "burner_stops_normalstop_allstops": {
+        "name": "Branderstops: Normale uitschakeling (totaal)"
+      },
+      "burner_stops_normalstop_laststops": {
+        "name": "Branderstops: Normale uitschakeling (laatst)"
+      },
+      "burner_stops_safetyshutdown_allstops": {
+        "name": "Branderstops: Veiligheidsuitschakeling (totaal)"
+      },
+      "burner_stops_safetyshutdown_laststops": {
+        "name": "Branderstops: Veiligheidsuitschakeling (laatst)"
+      },
+      "burner_stops_safetyshutdownerrorshutdown_allstops": {
+        "name": "Branderstops: Storingsuitschakeling (totaal)"
+      },
+      "burner_stops_safetyshutdownerrorshutdown_laststops": {
+        "name": "Branderstops: Storingsuitschakeling (laatst)"
+      },
+      "burner_stops_safetytime_allstops": {
+        "name": "Branderstops: Veiligheidstijd (totaal)"
+      },
+      "burner_stops_safetytime_laststops": {
+        "name": "Branderstops: Veiligheidstijd (laatst)"
+      },
+      "burner_stops_stabilisationprocess_allstops": {
+        "name": "Branderstops: Stabilisatie (totaal)"
+      },
+      "burner_stops_stabilisationprocess_laststops": {
+        "name": "Branderstops: Stabilisatie (laatst)"
+      },
+      "burner_stops_temperaturemonitor_allstops": {
+        "name": "Branderstops: Temperatuurbewaking (totaal)"
+      },
+      "burner_stops_temperaturemonitor_laststops": {
+        "name": "Branderstops: Temperatuurbewaking (laatst)"
+      },
+      "burner_stops_temperaturemonitorionizationcomparison_allstops": {
+        "name": "Branderstops: Temperatuurbewaking ionisatie (totaal)"
+      },
+      "burner_stops_temperaturemonitorionizationcomparison_laststops": {
+        "name": "Branderstops: Temperatuurbewaking ionisatie (laatst)"
+      },
+      "burner_stops_time_allstops": {
+        "name": "Branderstops: Tijdslimiet (totaal)"
+      },
+      "burner_stops_time_laststops": {
+        "name": "Branderstops: Tijdslimiet (laatst)"
+      },
+      "burner_stops_undervoltage_allstops": {
+        "name": "Branderstops: Onderspanning (totaal)"
+      },
+      "burner_stops_undervoltage_laststops": {
+        "name": "Branderstops: Onderspanning (laatst)"
+      },
+      "circuit_target_supply_temperature": {
+        "name": "Gewenste aanvoertemperatuur circuit {circuit}"
+      },
+      "dhw_stops_flamelossduringoperation_allstops": {
+        "name": "Branderstops warm water: Vlamverlies tijdens bedrijf (totaal)"
+      },
+      "dhw_stops_flamelossduringoperation_laststops": {
+        "name": "Branderstops warm water: Vlamverlies tijdens bedrijf (laatst)"
+      },
+      "dhw_stops_fluegastemperaturesensor_allstops": {
+        "name": "Branderstops warm water: Rookgastemperatuursensor (totaal)"
+      },
+      "dhw_stops_fluegastemperaturesensor_laststops": {
+        "name": "Branderstops warm water: Rookgastemperatuursensor (laatst)"
+      },
+      "dhw_stops_ionizationalignment_allstops": {
+        "name": "Branderstops warm water: Ionisatiekalibratie (totaal)"
+      },
+      "dhw_stops_ionizationalignment_laststops": {
+        "name": "Branderstops warm water: Ionisatiekalibratie (laatst)"
+      },
+      "dhw_stops_nogasatstart_allstops": {
+        "name": "Branderstops warm water: Geen gas bij start (totaal)"
+      },
+      "dhw_stops_nogasatstart_laststops": {
+        "name": "Branderstops warm water: Geen gas bij start (laatst)"
+      },
+      "dhw_stops_noignitionatstart_allstops": {
+        "name": "Branderstops warm water: Geen ontsteking bij start (totaal)"
+      },
+      "dhw_stops_noignitionatstart_laststops": {
+        "name": "Branderstops warm water: Geen ontsteking bij start (laatst)"
+      },
+      "dhw_stops_noionizationatstart_allstops": {
+        "name": "Branderstops warm water: Geen ionisatie bij start (totaal)"
+      },
+      "dhw_stops_noionizationatstart_laststops": {
+        "name": "Branderstops warm water: Geen ionisatie bij start (laatst)"
+      },
+      "dhw_stops_normalstop_allstops": {
+        "name": "Branderstops warm water: Normale uitschakeling (totaal)"
+      },
+      "dhw_stops_normalstop_laststops": {
+        "name": "Branderstops warm water: Normale uitschakeling (laatst)"
+      },
+      "dhw_stops_safetyshutdown_allstops": {
+        "name": "Branderstops warm water: Veiligheidsuitschakeling (totaal)"
+      },
+      "dhw_stops_safetyshutdown_laststops": {
+        "name": "Branderstops warm water: Veiligheidsuitschakeling (laatst)"
+      },
+      "dhw_stops_safetyshutdownerrorshutdown_allstops": {
+        "name": "Branderstops warm water: Storingsuitschakeling (totaal)"
+      },
+      "dhw_stops_safetyshutdownerrorshutdown_laststops": {
+        "name": "Branderstops warm water: Storingsuitschakeling (laatst)"
+      },
+      "dhw_stops_safetytime_allstops": {
+        "name": "Branderstops warm water: Veiligheidstijd (totaal)"
+      },
+      "dhw_stops_safetytime_laststops": {
+        "name": "Branderstops warm water: Veiligheidstijd (laatst)"
+      },
+      "dhw_stops_stabilisationprocess_allstops": {
+        "name": "Branderstops warm water: Stabilisatie (totaal)"
+      },
+      "dhw_stops_stabilisationprocess_laststops": {
+        "name": "Branderstops warm water: Stabilisatie (laatst)"
+      },
+      "dhw_stops_temperaturemonitor_allstops": {
+        "name": "Branderstops warm water: Temperatuurbewaking (totaal)"
+      },
+      "dhw_stops_temperaturemonitor_laststops": {
+        "name": "Branderstops warm water: Temperatuurbewaking (laatst)"
+      },
+      "dhw_stops_temperaturemonitorionizationcomparison_allstops": {
+        "name": "Branderstops warm water: Temperatuurbewaking ionisatie (totaal)"
+      },
+      "dhw_stops_temperaturemonitorionizationcomparison_laststops": {
+        "name": "Branderstops warm water: Temperatuurbewaking ionisatie (laatst)"
+      },
+      "dhw_stops_time_allstops": {
+        "name": "Branderstops warm water: Tijdslimiet (totaal)"
+      },
+      "dhw_stops_time_laststops": {
+        "name": "Branderstops warm water: Tijdslimiet (laatst)"
+      },
+      "dhw_stops_undervoltage_allstops": {
+        "name": "Branderstops warm water: Onderspanning (totaal)"
+      },
+      "dhw_stops_undervoltage_laststops": {
+        "name": "Branderstops warm water: Onderspanning (laatst)"
+      },
+      "gas_energy_dhw_currentday": {
+        "name": "Gasenergie warm water vandaag"
+      },
+      "gas_energy_dhw_currentmonth": {
+        "name": "Gasenergie warm water deze maand"
+      },
+      "gas_energy_dhw_currentyear": {
+        "name": "Gasenergie warm water dit jaar"
+      },
+      "gas_energy_dhw_lastmonth": {
+        "name": "Gasenergie warm water vorige maand"
+      },
+      "gas_energy_dhw_lastyear": {
+        "name": "Gasenergie warm water vorig jaar"
+      },
+      "gas_energy_heating_currentday": {
+        "name": "Gasenergie verwarming vandaag"
+      },
+      "gas_energy_heating_currentmonth": {
+        "name": "Gasenergie verwarming deze maand"
+      },
+      "gas_energy_heating_currentyear": {
+        "name": "Gasenergie verwarming dit jaar"
+      },
+      "gas_energy_heating_lastmonth": {
+        "name": "Gasenergie verwarming vorige maand"
+      },
+      "gas_energy_heating_lastyear": {
+        "name": "Gasenergie verwarming vorig jaar"
+      },
+      "heat_production_dhw_currentday": {
+        "name": "Geproduceerde warmte warm water vandaag"
+      },
+      "heat_production_dhw_currentmonth": {
+        "name": "Geproduceerde warmte warm water deze maand"
+      },
+      "heat_production_dhw_currentyear": {
+        "name": "Geproduceerde warmte warm water dit jaar"
+      },
+      "heat_production_dhw_lastmonth": {
+        "name": "Geproduceerde warmte warm water vorige maand"
+      },
+      "heat_production_dhw_lastsevendays": {
+        "name": "Geproduceerde warmte warm water laatste 7 dagen"
+      },
+      "heat_production_dhw_lastyear": {
+        "name": "Geproduceerde warmte warm water vorig jaar"
+      },
+      "heat_production_heating_currentday": {
+        "name": "Geproduceerde warmte verwarming vandaag"
+      },
+      "heat_production_heating_currentmonth": {
+        "name": "Geproduceerde warmte verwarming deze maand"
+      },
+      "heat_production_heating_currentyear": {
+        "name": "Geproduceerde warmte verwarming dit jaar"
+      },
+      "heat_production_heating_lastmonth": {
+        "name": "Geproduceerde warmte verwarming vorige maand"
+      },
+      "heat_production_heating_lastsevendays": {
+        "name": "Geproduceerde warmte verwarming laatste 7 dagen"
+      },
+      "heat_production_heating_lastyear": {
+        "name": "Geproduceerde warmte verwarming vorig jaar"
+      },
+      "hydraulic_separator_temperature": {
+        "name": "Temperatuur open verdeler"
+      },
+      "messages_info": {
+        "name": "Infomeldingen"
+      },
+      "messages_service": {
+        "name": "Onderhoudsmeldingen"
+      },
+      "messages_status": {
+        "name": "Statusmeldingen"
+      },
+      "schedule_today_circuit": {
+        "name": "Tijdprogramma circuit {circuit} vandaag"
+      },
+      "schedule_today_circulation": {
+        "name": "Tijdprogramma circulatie vandaag"
+      },
+      "schedule_today_dhw": {
+        "name": "Tijdprogramma warm water vandaag"
+      }
+    },
+    "binary_sensor": {
+      "boiler_pump_internal": {
+        "name": "Interne ketelpomp"
+      },
+      "circuit_program_forcedlastfromschedule": {
+        "name": "Geforceerd bedrijf volgens schema circuit {circuit}"
+      },
+      "circuit_program_reducedenergysaving": {
+        "name": "Energiebesparende modus circuit {circuit}"
+      },
+      "circuit_program_summereco": {
+        "name": "Zomer-eco circuit {circuit}"
+      },
+      "circuit_schedule": {
+        "name": "Tijdprogramma circuit {circuit}"
+      },
+      "circulation_schedule": {
+        "name": "Tijdprogramma circulatie"
+      },
+      "device_external_lock": {
+        "name": "Externe blokkering apparaat"
+      },
+      "dhw_hygiene_active": {
+        "name": "Legionellabescherming actief"
+      },
+      "dhw_schedule": {
+        "name": "Tijdprogramma warm water"
+      },
+      "heating_external_lock": {
+        "name": "Externe blokkering verwarming"
+      },
+      "holiday": {
+        "name": "Vakantie"
+      },
+      "holiday_at_home": {
+        "name": "Vakantie thuis"
+      },
+      "malfunction": {
+        "name": "Storing"
+      }
+    },
+    "select": {
+      "dhw_hygiene_day": {
+        "name": "Dag legionellabescherming",
+        "state": {
+          "daily": "Dagelijks",
+          "mon": "Maandag",
+          "tue": "Dinsdag",
+          "wed": "Woensdag",
+          "thu": "Donderdag",
+          "fri": "Vrijdag",
+          "sat": "Zaterdag",
+          "sun": "Zondag"
+        }
+      }
+    },
+    "switch": {
+      "dhw_hygiene": {
+        "name": "Legionellabescherming"
+      }
+    },
+    "button": {
+      "dhw_hygiene_start": {
+        "name": "Legionellabescherming nu starten"
+      }
+    },
+    "number": {
+      "dhw_hygiene_temperature": {
+        "name": "Temperatuur legionellabescherming"
+      }
+    },
+    "time": {
+      "dhw_hygiene_start_time": {
+        "name": "Starttijd legionellabescherming"
+      }
+    }
+  }
+}

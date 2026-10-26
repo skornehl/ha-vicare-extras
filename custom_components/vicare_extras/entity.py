@@ -25,7 +25,13 @@ class ViCareExtrasEntity(CoordinatorEntity[ViCareExtrasCoordinator]):
         self.spec = spec
         self._identifier = device.identifier
         self._attr_unique_id = f"{device.identifier}-extras-{spec.key}"
-        self._attr_name = spec.name
+        if spec.translation_key:
+            # Name from translations/<language>.json; new entity IDs come from
+            # the English name, so YAML stays shareable across languages.
+            self._attr_translation_key = spec.translation_key
+            self._attr_translation_placeholders = spec.placeholders or {}
+        else:
+            self._attr_name = spec.name
         self._attr_icon = spec.icon
         self._attr_entity_registry_enabled_default = spec.enabled_default
         if spec.diagnostic:

@@ -31,15 +31,17 @@ F_HYGIENE = "heating.dhw.hygiene"
 F_TRIGGER = "heating.dhw.hygiene.trigger"
 F_TEMP = "heating.dhw.temperature.hygiene"
 
-DAILY = "täglich"
+# Language-neutral option keys; the shown names come from translations
+# (entity.select.dhw_hygiene_day.state).
+DAILY = "daily"
 WEEKDAYS = {
-    "Mon": "Montag",
-    "Tue": "Dienstag",
-    "Wed": "Mittwoch",
-    "Thu": "Donnerstag",
-    "Fri": "Freitag",
-    "Sat": "Samstag",
-    "Sun": "Sonntag",
+    "Mon": "mon",
+    "Tue": "tue",
+    "Wed": "wed",
+    "Thu": "thu",
+    "Fri": "fri",
+    "Sat": "sat",
+    "Sun": "sun",
 }
 
 
@@ -116,7 +118,7 @@ class HygieneEntity(CoordinatorEntity[ViCareExtrasCoordinator]):
 class HygieneSwitch(HygieneEntity, SwitchEntity):
     _feature_name = F_HYGIENE
     _key = "dhw_hygiene_enabled"
-    _attr_name = "Legionellenschutz"
+    _attr_translation_key = "dhw_hygiene"
     _attr_icon = "mdi:bacteria-outline"
 
     @property
@@ -137,7 +139,7 @@ class HygieneSwitch(HygieneEntity, SwitchEntity):
 class HygieneStartButton(HygieneEntity, ButtonEntity):
     _feature_name = F_HYGIENE
     _key = "dhw_hygiene_activate"
-    _attr_name = "Legionellenschutz jetzt starten"
+    _attr_translation_key = "dhw_hygiene_start"
     _attr_icon = "mdi:play-circle-outline"
     _attr_entity_category = None
 
@@ -151,7 +153,7 @@ class HygieneStartButton(HygieneEntity, ButtonEntity):
 class HygieneTemperature(HygieneEntity, NumberEntity):
     _feature_name = F_TEMP
     _key = "dhw_hygiene_temperature"
-    _attr_name = "Legionellenschutz Temperatur"
+    _attr_translation_key = "dhw_hygiene_temperature"
     _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
     _attr_mode = NumberMode.BOX
     _attr_icon = "mdi:thermometer-water"
@@ -189,7 +191,7 @@ class HygieneTemperature(HygieneEntity, NumberEntity):
 class HygieneDay(HygieneEntity, SelectEntity):
     _feature_name = F_TRIGGER
     _key = "dhw_hygiene_day"
-    _attr_name = "Legionellenschutz Tag"
+    _attr_translation_key = "dhw_hygiene_day"
     _attr_icon = "mdi:calendar-week"
     _attr_options = [DAILY, *WEEKDAYS.values()]
 
@@ -217,7 +219,7 @@ class HygieneDay(HygieneEntity, SelectEntity):
 class HygieneStartTime(HygieneEntity, TimeEntity):
     _feature_name = F_TRIGGER
     _key = "dhw_hygiene_time"
-    _attr_name = "Legionellenschutz Startzeit"
+    _attr_translation_key = "dhw_hygiene_start_time"
     _attr_icon = "mdi:clock-outline"
 
     @property
