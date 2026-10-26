@@ -62,20 +62,40 @@ def _read_device(dev: Any) -> ExtrasDevice:
     try:
         api = dev.api
         service = api.service
-        accessor = api.accessor
         model = dev.config.getModel().replace("_", " ")
         identifier = _device_identifier(dev)
     except AttributeError as err:
         raise CoreInternalsChanged(str(err)) from err
+    # PyViCare >= 2.63 keeps the accessor on the device and one cache per
+    # gateway (filtered per device by _extract_entities). Older PyViCare,
+    # as bundled by custom ViCare integrations, keeps it on the service and
+    # one cache per device (issue #1: "'HeatPump' object has no attribute
+    # 'accessor'").
+    accessor = getattr(api, "accessor", None) or getattr(service, "accessor", None)
 
     snapshot = ExtrasDevice(identifier=identifier, model=model)
     cache = getattr(service, "_cache", None)
     if not cache:
         return snapshot
-    try:
-        entities = service._extract_entities(cache, accessor)  # noqa: SLF001
-    except Exception:  # noqa: BLE001 - fall back to the raw payload
+    entities = None
+    if accessor is not None and hasattr(service, "_extract_entities"):
+        try:
+            entities = service._extract_entities(cache, accessor)  # noqa: SLF001
+        except Exception:  # noqa: BLE001 - fall back to the raw payload
+            entities = None
+    if entities is None:
         entities = cache.get("data", [])
+        device_id = getattr(accessor, "device_id", None)
+        if device_id is None:
+            try:
+                device_id = dev.config.getId()
+            except AttributeError:
+                device_id = None
+        if device_id is not None:
+            entities = [
+                f for f in entities
+                if not isinstance(f, dict) or str(f.get("deviceId", device_id)) == str(device_id)
+            ]
     snapshot.features = {
         f["feature"]: f for f in entities if isinstance(f, dict) and "feature" in f
     }
