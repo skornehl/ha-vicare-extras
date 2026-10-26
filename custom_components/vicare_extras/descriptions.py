@@ -157,6 +157,57 @@ def _curated(dev: ExtrasDevice) -> list[Spec]:
             )
         )
 
+    # --- target supply temperature per heating circuit. The core integration
+    # only calls PyViCare's getTargetTemperature() on the device object
+    # (GLOBAL_SENSORS), where it has no circuit, so on gas boilers the
+    # circuit's flow set point is never exposed. Same for the internal pump.
+    for fname in sorted(feats):
+        m = re.fullmatch(r"heating\.circuits\.([^.]+)\.temperature", fname)
+        if not m or not has(fname):
+            continue
+        specs.append(
+            Spec(
+                key=f"circuit_{m.group(1)}_target_supply_temperature",
+                platform="sensor",
+                name=f"Vorlauf-Solltemperatur Heizkreis {m.group(1)}",
+                feature=fname,
+                value_fn=_value("value"),
+                unit="°C",
+                device_class="temperature",
+                state_class="measurement",
+                icon="mdi:thermometer-chevron-up",
+            )
+        )
+
+    # --- internal boiler pump: running and its set output in percent
+    fname = "heating.boiler.pumps.internal"
+    if has(fname):
+        specs.append(
+            Spec(
+                key="boiler_pump_internal",
+                platform="binary_sensor",
+                name="Interne Kesselpumpe",
+                feature=fname,
+                value_fn=lambda f: None if prop(f, "status") is None else prop(f, "status") == "on",
+                device_class="running",
+                icon="mdi:pump",
+            )
+        )
+    fname = "heating.boiler.pumps.internal.target"
+    if has(fname):
+        specs.append(
+            Spec(
+                key="boiler_pump_internal_target",
+                platform="sensor",
+                name="Kesselpumpe Sollleistung",
+                feature=fname,
+                value_fn=_value("value"),
+                unit="%",
+                state_class="measurement",
+                icon="mdi:pump",
+            )
+        )
+
     # --- malfunction / locks
     for fname, key, name, dclass in (
         ("device.lock.malfunction", "malfunction", "Störung", "problem"),
