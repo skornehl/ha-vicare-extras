@@ -83,6 +83,14 @@ Why not an efficiency sensor: Viessmann's "heat production" is exactly
 gas m³ × 10 kWh/m³ (checked against two years of data), so heat/gas would
 always be the same constant.
 
+## Languages
+
+Entity names are translated (English, German, Dutch) and follow the language
+set in Home Assistant. Entity IDs of new installations are generated from the
+English names, so YAML examples work for everyone. Existing entities keep their
+entity IDs. Generic diagnostic entities keep their technical feature names.
+Translations for more languages are welcome: `custom_components/vicare_extras/translations/`.
+
 ## Installation
 
 1. HACS -> Custom repositories -> `https://github.com/skornehl/ha-vicare-extras` (Integration)

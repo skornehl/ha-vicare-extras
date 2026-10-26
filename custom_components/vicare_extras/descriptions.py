@@ -13,7 +13,7 @@ Two layers:
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 import re
 from typing import Any
 
@@ -68,6 +68,10 @@ class Spec:
     diagnostic: bool = False
     icon: str | None = None
     extra: dict[str, Any] = field(default_factory=dict, compare=False, hash=False)
+    # Translated entity name (translations/*.json, entity.<platform>.<key>);
+    # `name` stays as the fallback and for the generic diagnostics.
+    translation_key: str | None = None
+    placeholders: dict[str, str] | None = None
 
 
 def _value(name: str) -> Callable[[Feature], Any]:
@@ -534,8 +538,26 @@ def _gas_energy(dev: ExtrasDevice, calorific: float | None) -> list[Spec]:
     return specs
 
 
+_CIRCUIT_KEY = re.compile(r"circuit_(\d+)_(.+)")
+_SCHEDULE_TODAY = {
+    "heating_dhw_schedule_today": "schedule_today_dhw",
+    "heating_dhw_pumps_circulation_schedule_today": "schedule_today_circulation",
+}
+
+
+def _translated(spec: Spec) -> Spec:
+    """Give a curated spec its translation key; circuit numbers become a placeholder."""
+    m = _CIRCUIT_KEY.fullmatch(spec.key)
+    if m:
+        return replace(spec, translation_key=f"circuit_{m[2].lower()}", placeholders={"circuit": m[1]})
+    m = re.fullmatch(r"heating_circuits_(\d+)_heating_schedule_today", spec.key)
+    if m:
+        return replace(spec, translation_key="schedule_today_circuit", placeholders={"circuit": m[1]})
+    return replace(spec, translation_key=_SCHEDULE_TODAY.get(spec.key, spec.key.lower()))
+
+
 def build_specs(dev: ExtrasDevice, calorific: float | None = None) -> list[Spec]:
     """Return all entity specs for one device."""
-    curated = _curated(dev) + _gas_energy(dev, calorific)
+    curated = [_translated(s) for s in _curated(dev) + _gas_energy(dev, calorific)]
     handled = {s.feature for s in curated if not s.key.startswith("gas_energy_")} | WRITABLE_FEATURES
     return curated + _generic(dev, handled)

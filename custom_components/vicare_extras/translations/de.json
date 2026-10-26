@@ -229,5 +229,361 @@
         }
       }
     }
+  },
+  "entity": {
+    "sensor": {
+      "boiler_pump_internal_target": {
+        "name": "Kesselpumpe Sollleistung"
+      },
+      "boiler_target_temperature": {
+        "name": "Kessel-Solltemperatur"
+      },
+      "burner_stops_flamelossduringoperation_allstops": {
+        "name": "Brennerstopps: Flammenverlust im Betrieb (gesamt)"
+      },
+      "burner_stops_flamelossduringoperation_laststops": {
+        "name": "Brennerstopps: Flammenverlust im Betrieb (zuletzt)"
+      },
+      "burner_stops_fluegastemperaturesensor_allstops": {
+        "name": "Brennerstopps: Abgastemperaturfühler (gesamt)"
+      },
+      "burner_stops_fluegastemperaturesensor_laststops": {
+        "name": "Brennerstopps: Abgastemperaturfühler (zuletzt)"
+      },
+      "burner_stops_ionizationalignment_allstops": {
+        "name": "Brennerstopps: Ionisationsabgleich (gesamt)"
+      },
+      "burner_stops_ionizationalignment_laststops": {
+        "name": "Brennerstopps: Ionisationsabgleich (zuletzt)"
+      },
+      "burner_stops_nogasatstart_allstops": {
+        "name": "Brennerstopps: Kein Gas beim Start (gesamt)"
+      },
+      "burner_stops_nogasatstart_laststops": {
+        "name": "Brennerstopps: Kein Gas beim Start (zuletzt)"
+      },
+      "burner_stops_noignitionatstart_allstops": {
+        "name": "Brennerstopps: Keine Zündung beim Start (gesamt)"
+      },
+      "burner_stops_noignitionatstart_laststops": {
+        "name": "Brennerstopps: Keine Zündung beim Start (zuletzt)"
+      },
+      "burner_stops_noionizationatstart_allstops": {
+        "name": "Brennerstopps: Keine Ionisation beim Start (gesamt)"
+      },
+      "burner_stops_noionizationatstart_laststops": {
+        "name": "Brennerstopps: Keine Ionisation beim Start (zuletzt)"
+      },
+      "burner_stops_normalstop_allstops": {
+        "name": "Brennerstopps: Normale Abschaltung (gesamt)"
+      },
+      "burner_stops_normalstop_laststops": {
+        "name": "Brennerstopps: Normale Abschaltung (zuletzt)"
+      },
+      "burner_stops_safetyshutdown_allstops": {
+        "name": "Brennerstopps: Sicherheitsabschaltung (gesamt)"
+      },
+      "burner_stops_safetyshutdown_laststops": {
+        "name": "Brennerstopps: Sicherheitsabschaltung (zuletzt)"
+      },
+      "burner_stops_safetyshutdownerrorshutdown_allstops": {
+        "name": "Brennerstopps: Störabschaltung (gesamt)"
+      },
+      "burner_stops_safetyshutdownerrorshutdown_laststops": {
+        "name": "Brennerstopps: Störabschaltung (zuletzt)"
+      },
+      "burner_stops_safetytime_allstops": {
+        "name": "Brennerstopps: Sicherheitszeit (gesamt)"
+      },
+      "burner_stops_safetytime_laststops": {
+        "name": "Brennerstopps: Sicherheitszeit (zuletzt)"
+      },
+      "burner_stops_stabilisationprocess_allstops": {
+        "name": "Brennerstopps: Stabilisierung (gesamt)"
+      },
+      "burner_stops_stabilisationprocess_laststops": {
+        "name": "Brennerstopps: Stabilisierung (zuletzt)"
+      },
+      "burner_stops_temperaturemonitor_allstops": {
+        "name": "Brennerstopps: Temperaturwächter (gesamt)"
+      },
+      "burner_stops_temperaturemonitor_laststops": {
+        "name": "Brennerstopps: Temperaturwächter (zuletzt)"
+      },
+      "burner_stops_temperaturemonitorionizationcomparison_allstops": {
+        "name": "Brennerstopps: Temperaturwächter Ionisation (gesamt)"
+      },
+      "burner_stops_temperaturemonitorionizationcomparison_laststops": {
+        "name": "Brennerstopps: Temperaturwächter Ionisation (zuletzt)"
+      },
+      "burner_stops_time_allstops": {
+        "name": "Brennerstopps: Zeitbegrenzung (gesamt)"
+      },
+      "burner_stops_time_laststops": {
+        "name": "Brennerstopps: Zeitbegrenzung (zuletzt)"
+      },
+      "burner_stops_undervoltage_allstops": {
+        "name": "Brennerstopps: Unterspannung (gesamt)"
+      },
+      "burner_stops_undervoltage_laststops": {
+        "name": "Brennerstopps: Unterspannung (zuletzt)"
+      },
+      "circuit_target_supply_temperature": {
+        "name": "Vorlauf-Solltemperatur Heizkreis {circuit}"
+      },
+      "dhw_stops_flamelossduringoperation_allstops": {
+        "name": "Brennerstopps WW: Flammenverlust im Betrieb (gesamt)"
+      },
+      "dhw_stops_flamelossduringoperation_laststops": {
+        "name": "Brennerstopps WW: Flammenverlust im Betrieb (zuletzt)"
+      },
+      "dhw_stops_fluegastemperaturesensor_allstops": {
+        "name": "Brennerstopps WW: Abgastemperaturfühler (gesamt)"
+      },
+      "dhw_stops_fluegastemperaturesensor_laststops": {
+        "name": "Brennerstopps WW: Abgastemperaturfühler (zuletzt)"
+      },
+      "dhw_stops_ionizationalignment_allstops": {
+        "name": "Brennerstopps WW: Ionisationsabgleich (gesamt)"
+      },
+      "dhw_stops_ionizationalignment_laststops": {
+        "name": "Brennerstopps WW: Ionisationsabgleich (zuletzt)"
+      },
+      "dhw_stops_nogasatstart_allstops": {
+        "name": "Brennerstopps WW: Kein Gas beim Start (gesamt)"
+      },
+      "dhw_stops_nogasatstart_laststops": {
+        "name": "Brennerstopps WW: Kein Gas beim Start (zuletzt)"
+      },
+      "dhw_stops_noignitionatstart_allstops": {
+        "name": "Brennerstopps WW: Keine Zündung beim Start (gesamt)"
+      },
+      "dhw_stops_noignitionatstart_laststops": {
+        "name": "Brennerstopps WW: Keine Zündung beim Start (zuletzt)"
+      },
+      "dhw_stops_noionizationatstart_allstops": {
+        "name": "Brennerstopps WW: Keine Ionisation beim Start (gesamt)"
+      },
+      "dhw_stops_noionizationatstart_laststops": {
+        "name": "Brennerstopps WW: Keine Ionisation beim Start (zuletzt)"
+      },
+      "dhw_stops_normalstop_allstops": {
+        "name": "Brennerstopps WW: Normale Abschaltung (gesamt)"
+      },
+      "dhw_stops_normalstop_laststops": {
+        "name": "Brennerstopps WW: Normale Abschaltung (zuletzt)"
+      },
+      "dhw_stops_safetyshutdown_allstops": {
+        "name": "Brennerstopps WW: Sicherheitsabschaltung (gesamt)"
+      },
+      "dhw_stops_safetyshutdown_laststops": {
+        "name": "Brennerstopps WW: Sicherheitsabschaltung (zuletzt)"
+      },
+      "dhw_stops_safetyshutdownerrorshutdown_allstops": {
+        "name": "Brennerstopps WW: Störabschaltung (gesamt)"
+      },
+      "dhw_stops_safetyshutdownerrorshutdown_laststops": {
+        "name": "Brennerstopps WW: Störabschaltung (zuletzt)"
+      },
+      "dhw_stops_safetytime_allstops": {
+        "name": "Brennerstopps WW: Sicherheitszeit (gesamt)"
+      },
+      "dhw_stops_safetytime_laststops": {
+        "name": "Brennerstopps WW: Sicherheitszeit (zuletzt)"
+      },
+      "dhw_stops_stabilisationprocess_allstops": {
+        "name": "Brennerstopps WW: Stabilisierung (gesamt)"
+      },
+      "dhw_stops_stabilisationprocess_laststops": {
+        "name": "Brennerstopps WW: Stabilisierung (zuletzt)"
+      },
+      "dhw_stops_temperaturemonitor_allstops": {
+        "name": "Brennerstopps WW: Temperaturwächter (gesamt)"
+      },
+      "dhw_stops_temperaturemonitor_laststops": {
+        "name": "Brennerstopps WW: Temperaturwächter (zuletzt)"
+      },
+      "dhw_stops_temperaturemonitorionizationcomparison_allstops": {
+        "name": "Brennerstopps WW: Temperaturwächter Ionisation (gesamt)"
+      },
+      "dhw_stops_temperaturemonitorionizationcomparison_laststops": {
+        "name": "Brennerstopps WW: Temperaturwächter Ionisation (zuletzt)"
+      },
+      "dhw_stops_time_allstops": {
+        "name": "Brennerstopps WW: Zeitbegrenzung (gesamt)"
+      },
+      "dhw_stops_time_laststops": {
+        "name": "Brennerstopps WW: Zeitbegrenzung (zuletzt)"
+      },
+      "dhw_stops_undervoltage_allstops": {
+        "name": "Brennerstopps WW: Unterspannung (gesamt)"
+      },
+      "dhw_stops_undervoltage_laststops": {
+        "name": "Brennerstopps WW: Unterspannung (zuletzt)"
+      },
+      "gas_energy_dhw_currentday": {
+        "name": "Gasenergie Warmwasser heute"
+      },
+      "gas_energy_dhw_currentmonth": {
+        "name": "Gasenergie Warmwasser diesen Monat"
+      },
+      "gas_energy_dhw_currentyear": {
+        "name": "Gasenergie Warmwasser dieses Jahr"
+      },
+      "gas_energy_dhw_lastmonth": {
+        "name": "Gasenergie Warmwasser letzten Monat"
+      },
+      "gas_energy_dhw_lastyear": {
+        "name": "Gasenergie Warmwasser letztes Jahr"
+      },
+      "gas_energy_heating_currentday": {
+        "name": "Gasenergie Heizung heute"
+      },
+      "gas_energy_heating_currentmonth": {
+        "name": "Gasenergie Heizung diesen Monat"
+      },
+      "gas_energy_heating_currentyear": {
+        "name": "Gasenergie Heizung dieses Jahr"
+      },
+      "gas_energy_heating_lastmonth": {
+        "name": "Gasenergie Heizung letzten Monat"
+      },
+      "gas_energy_heating_lastyear": {
+        "name": "Gasenergie Heizung letztes Jahr"
+      },
+      "heat_production_dhw_currentday": {
+        "name": "Erzeugte Wärme Warmwasser heute"
+      },
+      "heat_production_dhw_currentmonth": {
+        "name": "Erzeugte Wärme Warmwasser diesen Monat"
+      },
+      "heat_production_dhw_currentyear": {
+        "name": "Erzeugte Wärme Warmwasser dieses Jahr"
+      },
+      "heat_production_dhw_lastmonth": {
+        "name": "Erzeugte Wärme Warmwasser letzten Monat"
+      },
+      "heat_production_dhw_lastsevendays": {
+        "name": "Erzeugte Wärme Warmwasser letzte 7 Tage"
+      },
+      "heat_production_dhw_lastyear": {
+        "name": "Erzeugte Wärme Warmwasser letztes Jahr"
+      },
+      "heat_production_heating_currentday": {
+        "name": "Erzeugte Wärme Heizung heute"
+      },
+      "heat_production_heating_currentmonth": {
+        "name": "Erzeugte Wärme Heizung diesen Monat"
+      },
+      "heat_production_heating_currentyear": {
+        "name": "Erzeugte Wärme Heizung dieses Jahr"
+      },
+      "heat_production_heating_lastmonth": {
+        "name": "Erzeugte Wärme Heizung letzten Monat"
+      },
+      "heat_production_heating_lastsevendays": {
+        "name": "Erzeugte Wärme Heizung letzte 7 Tage"
+      },
+      "heat_production_heating_lastyear": {
+        "name": "Erzeugte Wärme Heizung letztes Jahr"
+      },
+      "hydraulic_separator_temperature": {
+        "name": "Temperatur hydraulische Weiche"
+      },
+      "messages_info": {
+        "name": "Infomeldungen"
+      },
+      "messages_service": {
+        "name": "Wartungsmeldungen"
+      },
+      "messages_status": {
+        "name": "Statusmeldungen"
+      },
+      "schedule_today_circuit": {
+        "name": "Zeitprogramm Heizkreis {circuit} heute"
+      },
+      "schedule_today_circulation": {
+        "name": "Zeitprogramm Zirkulation heute"
+      },
+      "schedule_today_dhw": {
+        "name": "Zeitprogramm Warmwasser heute"
+      }
+    },
+    "binary_sensor": {
+      "boiler_pump_internal": {
+        "name": "Interne Kesselpumpe"
+      },
+      "circuit_program_forcedlastfromschedule": {
+        "name": "Zwangsbetrieb nach Zeitplan Heizkreis {circuit}"
+      },
+      "circuit_program_reducedenergysaving": {
+        "name": "Energiesparbetrieb Heizkreis {circuit}"
+      },
+      "circuit_program_summereco": {
+        "name": "Sommer-Eco Heizkreis {circuit}"
+      },
+      "circuit_schedule": {
+        "name": "Zeitprogramm Heizkreis {circuit}"
+      },
+      "circulation_schedule": {
+        "name": "Zeitprogramm Zirkulation"
+      },
+      "device_external_lock": {
+        "name": "Externe Sperre Gerät"
+      },
+      "dhw_hygiene_active": {
+        "name": "Legionellenschutz läuft"
+      },
+      "dhw_schedule": {
+        "name": "Zeitprogramm Warmwasser"
+      },
+      "heating_external_lock": {
+        "name": "Externe Sperre Heizung"
+      },
+      "holiday": {
+        "name": "Urlaub"
+      },
+      "holiday_at_home": {
+        "name": "Urlaub zu Hause"
+      },
+      "malfunction": {
+        "name": "Störung"
+      }
+    },
+    "select": {
+      "dhw_hygiene_day": {
+        "name": "Legionellenschutz Tag",
+        "state": {
+          "daily": "täglich",
+          "mon": "Montag",
+          "tue": "Dienstag",
+          "wed": "Mittwoch",
+          "thu": "Donnerstag",
+          "fri": "Freitag",
+          "sat": "Samstag",
+          "sun": "Sonntag"
+        }
+      }
+    },
+    "switch": {
+      "dhw_hygiene": {
+        "name": "Legionellenschutz"
+      }
+    },
+    "button": {
+      "dhw_hygiene_start": {
+        "name": "Legionellenschutz jetzt starten"
+      }
+    },
+    "number": {
+      "dhw_hygiene_temperature": {
+        "name": "Legionellenschutz Temperatur"
+      }
+    },
+    "time": {
+      "dhw_hygiene_start_time": {
+        "name": "Legionellenschutz Startzeit"
+      }
+    }
   }
 }

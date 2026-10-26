@@ -229,5 +229,361 @@
         }
       }
     }
+  },
+  "entity": {
+    "sensor": {
+      "boiler_pump_internal_target": {
+        "name": "Boiler pump target output"
+      },
+      "boiler_target_temperature": {
+        "name": "Boiler target temperature"
+      },
+      "burner_stops_flamelossduringoperation_allstops": {
+        "name": "Burner stops: Flame loss during operation (total)"
+      },
+      "burner_stops_flamelossduringoperation_laststops": {
+        "name": "Burner stops: Flame loss during operation (last)"
+      },
+      "burner_stops_fluegastemperaturesensor_allstops": {
+        "name": "Burner stops: Flue gas temperature sensor (total)"
+      },
+      "burner_stops_fluegastemperaturesensor_laststops": {
+        "name": "Burner stops: Flue gas temperature sensor (last)"
+      },
+      "burner_stops_ionizationalignment_allstops": {
+        "name": "Burner stops: Ionization calibration (total)"
+      },
+      "burner_stops_ionizationalignment_laststops": {
+        "name": "Burner stops: Ionization calibration (last)"
+      },
+      "burner_stops_nogasatstart_allstops": {
+        "name": "Burner stops: No gas at start (total)"
+      },
+      "burner_stops_nogasatstart_laststops": {
+        "name": "Burner stops: No gas at start (last)"
+      },
+      "burner_stops_noignitionatstart_allstops": {
+        "name": "Burner stops: No ignition at start (total)"
+      },
+      "burner_stops_noignitionatstart_laststops": {
+        "name": "Burner stops: No ignition at start (last)"
+      },
+      "burner_stops_noionizationatstart_allstops": {
+        "name": "Burner stops: No ionization at start (total)"
+      },
+      "burner_stops_noionizationatstart_laststops": {
+        "name": "Burner stops: No ionization at start (last)"
+      },
+      "burner_stops_normalstop_allstops": {
+        "name": "Burner stops: Normal shutdown (total)"
+      },
+      "burner_stops_normalstop_laststops": {
+        "name": "Burner stops: Normal shutdown (last)"
+      },
+      "burner_stops_safetyshutdown_allstops": {
+        "name": "Burner stops: Safety shutdown (total)"
+      },
+      "burner_stops_safetyshutdown_laststops": {
+        "name": "Burner stops: Safety shutdown (last)"
+      },
+      "burner_stops_safetyshutdownerrorshutdown_allstops": {
+        "name": "Burner stops: Fault shutdown (total)"
+      },
+      "burner_stops_safetyshutdownerrorshutdown_laststops": {
+        "name": "Burner stops: Fault shutdown (last)"
+      },
+      "burner_stops_safetytime_allstops": {
+        "name": "Burner stops: Safety time (total)"
+      },
+      "burner_stops_safetytime_laststops": {
+        "name": "Burner stops: Safety time (last)"
+      },
+      "burner_stops_stabilisationprocess_allstops": {
+        "name": "Burner stops: Stabilisation (total)"
+      },
+      "burner_stops_stabilisationprocess_laststops": {
+        "name": "Burner stops: Stabilisation (last)"
+      },
+      "burner_stops_temperaturemonitor_allstops": {
+        "name": "Burner stops: Temperature monitor (total)"
+      },
+      "burner_stops_temperaturemonitor_laststops": {
+        "name": "Burner stops: Temperature monitor (last)"
+      },
+      "burner_stops_temperaturemonitorionizationcomparison_allstops": {
+        "name": "Burner stops: Temperature monitor ionization (total)"
+      },
+      "burner_stops_temperaturemonitorionizationcomparison_laststops": {
+        "name": "Burner stops: Temperature monitor ionization (last)"
+      },
+      "burner_stops_time_allstops": {
+        "name": "Burner stops: Time limit (total)"
+      },
+      "burner_stops_time_laststops": {
+        "name": "Burner stops: Time limit (last)"
+      },
+      "burner_stops_undervoltage_allstops": {
+        "name": "Burner stops: Undervoltage (total)"
+      },
+      "burner_stops_undervoltage_laststops": {
+        "name": "Burner stops: Undervoltage (last)"
+      },
+      "circuit_target_supply_temperature": {
+        "name": "Target supply temperature circuit {circuit}"
+      },
+      "dhw_stops_flamelossduringoperation_allstops": {
+        "name": "Burner stops hot water: Flame loss during operation (total)"
+      },
+      "dhw_stops_flamelossduringoperation_laststops": {
+        "name": "Burner stops hot water: Flame loss during operation (last)"
+      },
+      "dhw_stops_fluegastemperaturesensor_allstops": {
+        "name": "Burner stops hot water: Flue gas temperature sensor (total)"
+      },
+      "dhw_stops_fluegastemperaturesensor_laststops": {
+        "name": "Burner stops hot water: Flue gas temperature sensor (last)"
+      },
+      "dhw_stops_ionizationalignment_allstops": {
+        "name": "Burner stops hot water: Ionization calibration (total)"
+      },
+      "dhw_stops_ionizationalignment_laststops": {
+        "name": "Burner stops hot water: Ionization calibration (last)"
+      },
+      "dhw_stops_nogasatstart_allstops": {
+        "name": "Burner stops hot water: No gas at start (total)"
+      },
+      "dhw_stops_nogasatstart_laststops": {
+        "name": "Burner stops hot water: No gas at start (last)"
+      },
+      "dhw_stops_noignitionatstart_allstops": {
+        "name": "Burner stops hot water: No ignition at start (total)"
+      },
+      "dhw_stops_noignitionatstart_laststops": {
+        "name": "Burner stops hot water: No ignition at start (last)"
+      },
+      "dhw_stops_noionizationatstart_allstops": {
+        "name": "Burner stops hot water: No ionization at start (total)"
+      },
+      "dhw_stops_noionizationatstart_laststops": {
+        "name": "Burner stops hot water: No ionization at start (last)"
+      },
+      "dhw_stops_normalstop_allstops": {
+        "name": "Burner stops hot water: Normal shutdown (total)"
+      },
+      "dhw_stops_normalstop_laststops": {
+        "name": "Burner stops hot water: Normal shutdown (last)"
+      },
+      "dhw_stops_safetyshutdown_allstops": {
+        "name": "Burner stops hot water: Safety shutdown (total)"
+      },
+      "dhw_stops_safetyshutdown_laststops": {
+        "name": "Burner stops hot water: Safety shutdown (last)"
+      },
+      "dhw_stops_safetyshutdownerrorshutdown_allstops": {
+        "name": "Burner stops hot water: Fault shutdown (total)"
+      },
+      "dhw_stops_safetyshutdownerrorshutdown_laststops": {
+        "name": "Burner stops hot water: Fault shutdown (last)"
+      },
+      "dhw_stops_safetytime_allstops": {
+        "name": "Burner stops hot water: Safety time (total)"
+      },
+      "dhw_stops_safetytime_laststops": {
+        "name": "Burner stops hot water: Safety time (last)"
+      },
+      "dhw_stops_stabilisationprocess_allstops": {
+        "name": "Burner stops hot water: Stabilisation (total)"
+      },
+      "dhw_stops_stabilisationprocess_laststops": {
+        "name": "Burner stops hot water: Stabilisation (last)"
+      },
+      "dhw_stops_temperaturemonitor_allstops": {
+        "name": "Burner stops hot water: Temperature monitor (total)"
+      },
+      "dhw_stops_temperaturemonitor_laststops": {
+        "name": "Burner stops hot water: Temperature monitor (last)"
+      },
+      "dhw_stops_temperaturemonitorionizationcomparison_allstops": {
+        "name": "Burner stops hot water: Temperature monitor ionization (total)"
+      },
+      "dhw_stops_temperaturemonitorionizationcomparison_laststops": {
+        "name": "Burner stops hot water: Temperature monitor ionization (last)"
+      },
+      "dhw_stops_time_allstops": {
+        "name": "Burner stops hot water: Time limit (total)"
+      },
+      "dhw_stops_time_laststops": {
+        "name": "Burner stops hot water: Time limit (last)"
+      },
+      "dhw_stops_undervoltage_allstops": {
+        "name": "Burner stops hot water: Undervoltage (total)"
+      },
+      "dhw_stops_undervoltage_laststops": {
+        "name": "Burner stops hot water: Undervoltage (last)"
+      },
+      "gas_energy_dhw_currentday": {
+        "name": "Gas energy hot water today"
+      },
+      "gas_energy_dhw_currentmonth": {
+        "name": "Gas energy hot water this month"
+      },
+      "gas_energy_dhw_currentyear": {
+        "name": "Gas energy hot water this year"
+      },
+      "gas_energy_dhw_lastmonth": {
+        "name": "Gas energy hot water last month"
+      },
+      "gas_energy_dhw_lastyear": {
+        "name": "Gas energy hot water last year"
+      },
+      "gas_energy_heating_currentday": {
+        "name": "Gas energy heating today"
+      },
+      "gas_energy_heating_currentmonth": {
+        "name": "Gas energy heating this month"
+      },
+      "gas_energy_heating_currentyear": {
+        "name": "Gas energy heating this year"
+      },
+      "gas_energy_heating_lastmonth": {
+        "name": "Gas energy heating last month"
+      },
+      "gas_energy_heating_lastyear": {
+        "name": "Gas energy heating last year"
+      },
+      "heat_production_dhw_currentday": {
+        "name": "Heat produced hot water today"
+      },
+      "heat_production_dhw_currentmonth": {
+        "name": "Heat produced hot water this month"
+      },
+      "heat_production_dhw_currentyear": {
+        "name": "Heat produced hot water this year"
+      },
+      "heat_production_dhw_lastmonth": {
+        "name": "Heat produced hot water last month"
+      },
+      "heat_production_dhw_lastsevendays": {
+        "name": "Heat produced hot water last 7 days"
+      },
+      "heat_production_dhw_lastyear": {
+        "name": "Heat produced hot water last year"
+      },
+      "heat_production_heating_currentday": {
+        "name": "Heat produced heating today"
+      },
+      "heat_production_heating_currentmonth": {
+        "name": "Heat produced heating this month"
+      },
+      "heat_production_heating_currentyear": {
+        "name": "Heat produced heating this year"
+      },
+      "heat_production_heating_lastmonth": {
+        "name": "Heat produced heating last month"
+      },
+      "heat_production_heating_lastsevendays": {
+        "name": "Heat produced heating last 7 days"
+      },
+      "heat_production_heating_lastyear": {
+        "name": "Heat produced heating last year"
+      },
+      "hydraulic_separator_temperature": {
+        "name": "Hydraulic separator temperature"
+      },
+      "messages_info": {
+        "name": "Info messages"
+      },
+      "messages_service": {
+        "name": "Service messages"
+      },
+      "messages_status": {
+        "name": "Status messages"
+      },
+      "schedule_today_circuit": {
+        "name": "Schedule circuit {circuit} today"
+      },
+      "schedule_today_circulation": {
+        "name": "Schedule circulation today"
+      },
+      "schedule_today_dhw": {
+        "name": "Schedule hot water today"
+      }
+    },
+    "binary_sensor": {
+      "boiler_pump_internal": {
+        "name": "Internal boiler pump"
+      },
+      "circuit_program_forcedlastfromschedule": {
+        "name": "Forced operation by schedule circuit {circuit}"
+      },
+      "circuit_program_reducedenergysaving": {
+        "name": "Energy saving mode circuit {circuit}"
+      },
+      "circuit_program_summereco": {
+        "name": "Summer eco circuit {circuit}"
+      },
+      "circuit_schedule": {
+        "name": "Schedule circuit {circuit}"
+      },
+      "circulation_schedule": {
+        "name": "Schedule circulation"
+      },
+      "device_external_lock": {
+        "name": "External lock device"
+      },
+      "dhw_hygiene_active": {
+        "name": "Legionella protection running"
+      },
+      "dhw_schedule": {
+        "name": "Schedule hot water"
+      },
+      "heating_external_lock": {
+        "name": "External lock heating"
+      },
+      "holiday": {
+        "name": "Holiday"
+      },
+      "holiday_at_home": {
+        "name": "Holiday at home"
+      },
+      "malfunction": {
+        "name": "Malfunction"
+      }
+    },
+    "select": {
+      "dhw_hygiene_day": {
+        "name": "Legionella protection day",
+        "state": {
+          "daily": "Daily",
+          "mon": "Monday",
+          "tue": "Tuesday",
+          "wed": "Wednesday",
+          "thu": "Thursday",
+          "fri": "Friday",
+          "sat": "Saturday",
+          "sun": "Sunday"
+        }
+      }
+    },
+    "switch": {
+      "dhw_hygiene": {
+        "name": "Legionella protection"
+      }
+    },
+    "button": {
+      "dhw_hygiene_start": {
+        "name": "Start legionella protection now"
+      }
+    },
+    "number": {
+      "dhw_hygiene_temperature": {
+        "name": "Legionella protection temperature"
+      }
+    },
+    "time": {
+      "dhw_hygiene_start_time": {
+        "name": "Legionella protection start time"
+      }
+    }
   }
 }
