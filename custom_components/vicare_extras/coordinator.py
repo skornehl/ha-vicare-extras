@@ -74,7 +74,11 @@ def _read_device(dev: Any) -> ExtrasDevice:
     accessor = getattr(api, "accessor", None) or getattr(service, "accessor", None)
 
     snapshot = ExtrasDevice(identifier=identifier, model=model)
+    # PyViCare <= 2.60 stores the cache as `self.__cache`, which Python
+    # name-mangles to `_ViCareCachedService__cache`; `_cache` exists from 2.61.
     cache = getattr(service, "_cache", None)
+    if cache is None:
+        cache = getattr(service, "_ViCareCachedService__cache", None)
     if not cache:
         return snapshot
     entities = None
@@ -99,7 +103,9 @@ def _read_device(dev: Any) -> ExtrasDevice:
     snapshot.features = {
         f["feature"]: f for f in entities if isinstance(f, dict) and "feature" in f
     }
-    snapshot.cache_time = getattr(service, "_cacheTime", None)
+    snapshot.cache_time = getattr(service, "_cacheTime", None) or getattr(
+        service, "_ViCareCachedService__cacheTime", None
+    )
     return snapshot
 
 
