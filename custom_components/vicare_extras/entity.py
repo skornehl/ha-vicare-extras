@@ -17,6 +17,10 @@ class ViCareExtrasEntity(CoordinatorEntity[ViCareExtrasCoordinator]):
     """An entity backed by one feature of one ViCare device."""
 
     _attr_has_entity_name = True
+    # api_data_from changes on every API poll (every 60-90 s) and carries no
+    # history value. Keep it in the live state, but out of the recorder, so
+    # each poll does not write a new state + state_attributes row per entity.
+    _unrecorded_attributes = frozenset({"api_data_from"})
 
     def __init__(
         self, coordinator: ViCareExtrasCoordinator, device: ExtrasDevice, spec: Spec
