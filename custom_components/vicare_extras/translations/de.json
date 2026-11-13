@@ -232,6 +232,9 @@
   },
   "entity": {
     "sensor": {
+      "api_data_from": {
+        "name": "API-Daten von"
+      },
       "boiler_pump_internal_target": {
         "name": "Kesselpumpe Sollleistung"
       },

@@ -42,6 +42,11 @@ Enabled by default (tested on a Vitodens 200 / E3):
 | Schedules for heating circuit, DHW, circulation (entries as attributes) | `*.schedule` |
 | Forced-from-schedule, energy saving (with reason), summer eco | `heating.circuits.N.operating.programs.*` |
 | Boiler target temperature | `heating.boiler.temperature` |
+| API data from (diagnostic timestamp, one per device) | time of the core integration's last API fetch |
+
+Since v0.7 the fetch time is this one sensor instead of an `api_data_from`
+attribute on every entity: an attribute that changes on every poll makes the
+recorder write a new row for every entity each time.
 
 Every other enabled feature property that the core integration does not
 cover is created as a **disabled diagnostic entity**, so everything the API

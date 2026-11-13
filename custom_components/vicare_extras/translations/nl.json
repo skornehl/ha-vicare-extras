@@ -1,6 +1,9 @@
 {
   "entity": {
     "sensor": {
+      "api_data_from": {
+        "name": "API-gegevens van"
+      },
       "boiler_pump_internal_target": {
         "name": "Doelvermogen ketelpomp"
       },
