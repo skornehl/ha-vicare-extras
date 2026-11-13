@@ -13,6 +13,20 @@ from .coordinator import ExtrasDevice, ViCareExtrasCoordinator
 from .descriptions import Spec
 
 
+def device_info(device: ExtrasDevice) -> DeviceInfo:
+    """Device info matching the core integration's device.
+
+    Same identifier as the core integration, so these entities show up on the
+    existing ViCare device instead of a new one.
+    """
+    return DeviceInfo(
+        identifiers={(VICARE_DOMAIN, device.identifier)},
+        name=device.model,
+        manufacturer="Viessmann",
+        model=device.model,
+    )
+
+
 class ViCareExtrasEntity(CoordinatorEntity[ViCareExtrasCoordinator]):
     """An entity backed by one feature of one ViCare device."""
 
@@ -36,14 +50,7 @@ class ViCareExtrasEntity(CoordinatorEntity[ViCareExtrasCoordinator]):
         self._attr_entity_registry_enabled_default = spec.enabled_default
         if spec.diagnostic:
             self._attr_entity_category = EntityCategory.DIAGNOSTIC
-        # Same identifier as the core integration, so these entities show up
-        # on the existing ViCare device instead of a new one.
-        self._attr_device_info = DeviceInfo(
-            identifiers={(VICARE_DOMAIN, device.identifier)},
-            name=device.model,
-            manufacturer="Viessmann",
-            model=device.model,
-        )
+        self._attr_device_info = device_info(device)
 
     @property
     def _feature(self) -> dict[str, Any] | None:
@@ -60,9 +67,9 @@ class ViCareExtrasEntity(CoordinatorEntity[ViCareExtrasCoordinator]):
         attrs: dict[str, Any] = {"feature": self.spec.feature}
         if feature is not None and self.spec.attrs_fn is not None:
             attrs.update(self.spec.attrs_fn(feature))
-        dev = (self.coordinator.data or {}).get(self._identifier)
-        if dev and dev.cache_time:
-            attrs["api_data_from"] = dev.cache_time.isoformat()
+        # No per-poll timestamp here: any attribute change fires state_changed
+        # and makes the recorder write a new row for every entity on every
+        # poll. The cache time has its own sensor (ViCareExtrasApiDataSensor).
         return attrs
 
     def _raw_value(self) -> Any:
