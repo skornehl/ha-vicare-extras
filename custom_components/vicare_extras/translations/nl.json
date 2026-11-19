@@ -14,91 +14,91 @@
         "name": "Branderstops: Vlamverlies tijdens bedrijf (totaal)"
       },
       "burner_stops_flamelossduringoperation_laststops": {
-        "name": "Branderstops: Vlamverlies tijdens bedrijf (laatst)"
+        "name": "Branderstops: Vlamverlies tijdens bedrijf (laatste stops)"
       },
       "burner_stops_fluegastemperaturesensor_allstops": {
         "name": "Branderstops: Rookgastemperatuursensor (totaal)"
       },
       "burner_stops_fluegastemperaturesensor_laststops": {
-        "name": "Branderstops: Rookgastemperatuursensor (laatst)"
+        "name": "Branderstops: Rookgastemperatuursensor (laatste stops)"
       },
       "burner_stops_ionizationalignment_allstops": {
         "name": "Branderstops: Ionisatiekalibratie (totaal)"
       },
       "burner_stops_ionizationalignment_laststops": {
-        "name": "Branderstops: Ionisatiekalibratie (laatst)"
+        "name": "Branderstops: Ionisatiekalibratie (laatste stops)"
       },
       "burner_stops_nogasatstart_allstops": {
         "name": "Branderstops: Geen gas bij start (totaal)"
       },
       "burner_stops_nogasatstart_laststops": {
-        "name": "Branderstops: Geen gas bij start (laatst)"
+        "name": "Branderstops: Geen gas bij start (laatste stops)"
       },
       "burner_stops_noignitionatstart_allstops": {
         "name": "Branderstops: Geen ontsteking bij start (totaal)"
       },
       "burner_stops_noignitionatstart_laststops": {
-        "name": "Branderstops: Geen ontsteking bij start (laatst)"
+        "name": "Branderstops: Geen ontsteking bij start (laatste stops)"
       },
       "burner_stops_noionizationatstart_allstops": {
         "name": "Branderstops: Geen ionisatie bij start (totaal)"
       },
       "burner_stops_noionizationatstart_laststops": {
-        "name": "Branderstops: Geen ionisatie bij start (laatst)"
+        "name": "Branderstops: Geen ionisatie bij start (laatste stops)"
       },
       "burner_stops_normalstop_allstops": {
         "name": "Branderstops: Normale uitschakeling (totaal)"
       },
       "burner_stops_normalstop_laststops": {
-        "name": "Branderstops: Normale uitschakeling (laatst)"
+        "name": "Branderstops: Normale uitschakeling (laatste stops)"
       },
       "burner_stops_safetyshutdown_allstops": {
         "name": "Branderstops: Veiligheidsuitschakeling (totaal)"
       },
       "burner_stops_safetyshutdown_laststops": {
-        "name": "Branderstops: Veiligheidsuitschakeling (laatst)"
+        "name": "Branderstops: Veiligheidsuitschakeling (laatste stops)"
       },
       "burner_stops_safetyshutdownerrorshutdown_allstops": {
         "name": "Branderstops: Storingsuitschakeling (totaal)"
       },
       "burner_stops_safetyshutdownerrorshutdown_laststops": {
-        "name": "Branderstops: Storingsuitschakeling (laatst)"
+        "name": "Branderstops: Storingsuitschakeling (laatste stops)"
       },
       "burner_stops_safetytime_allstops": {
         "name": "Branderstops: Veiligheidstijd (totaal)"
       },
       "burner_stops_safetytime_laststops": {
-        "name": "Branderstops: Veiligheidstijd (laatst)"
+        "name": "Branderstops: Veiligheidstijd (laatste stops)"
       },
       "burner_stops_stabilisationprocess_allstops": {
         "name": "Branderstops: Stabilisatie (totaal)"
       },
       "burner_stops_stabilisationprocess_laststops": {
-        "name": "Branderstops: Stabilisatie (laatst)"
+        "name": "Branderstops: Stabilisatie (laatste stops)"
       },
       "burner_stops_temperaturemonitor_allstops": {
         "name": "Branderstops: Temperatuurbewaking (totaal)"
       },
       "burner_stops_temperaturemonitor_laststops": {
-        "name": "Branderstops: Temperatuurbewaking (laatst)"
+        "name": "Branderstops: Temperatuurbewaking (laatste stops)"
       },
       "burner_stops_temperaturemonitorionizationcomparison_allstops": {
         "name": "Branderstops: Temperatuurbewaking ionisatie (totaal)"
       },
       "burner_stops_temperaturemonitorionizationcomparison_laststops": {
-        "name": "Branderstops: Temperatuurbewaking ionisatie (laatst)"
+        "name": "Branderstops: Temperatuurbewaking ionisatie (laatste stops)"
       },
       "burner_stops_time_allstops": {
-        "name": "Branderstops: Tijdslimiet (totaal)"
+        "name": "Branderlooptijd (totaal)"
       },
       "burner_stops_time_laststops": {
-        "name": "Branderstops: Tijdslimiet (laatst)"
+        "name": "Branderlooptijd (laatste stops)"
       },
       "burner_stops_undervoltage_allstops": {
         "name": "Branderstops: Onderspanning (totaal)"
       },
       "burner_stops_undervoltage_laststops": {
-        "name": "Branderstops: Onderspanning (laatst)"
+        "name": "Branderstops: Onderspanning (laatste stops)"
       },
       "circuit_target_supply_temperature": {
         "name": "Gewenste aanvoertemperatuur circuit {circuit}"
@@ -107,91 +107,91 @@
         "name": "Branderstops SWW: Vlamverlies tijdens bedrijf (totaal)"
       },
       "dhw_stops_flamelossduringoperation_laststops": {
-        "name": "Branderstops SWW: Vlamverlies tijdens bedrijf (laatst)"
+        "name": "Branderstops SWW: Vlamverlies tijdens bedrijf (laatste stops)"
       },
       "dhw_stops_fluegastemperaturesensor_allstops": {
         "name": "Branderstops SWW: Rookgastemperatuursensor (totaal)"
       },
       "dhw_stops_fluegastemperaturesensor_laststops": {
-        "name": "Branderstops SWW: Rookgastemperatuursensor (laatst)"
+        "name": "Branderstops SWW: Rookgastemperatuursensor (laatste stops)"
       },
       "dhw_stops_ionizationalignment_allstops": {
         "name": "Branderstops SWW: Ionisatiekalibratie (totaal)"
       },
       "dhw_stops_ionizationalignment_laststops": {
-        "name": "Branderstops SWW: Ionisatiekalibratie (laatst)"
+        "name": "Branderstops SWW: Ionisatiekalibratie (laatste stops)"
       },
       "dhw_stops_nogasatstart_allstops": {
         "name": "Branderstops SWW: Geen gas bij start (totaal)"
       },
       "dhw_stops_nogasatstart_laststops": {
-        "name": "Branderstops SWW: Geen gas bij start (laatst)"
+        "name": "Branderstops SWW: Geen gas bij start (laatste stops)"
       },
       "dhw_stops_noignitionatstart_allstops": {
         "name": "Branderstops SWW: Geen ontsteking bij start (totaal)"
       },
       "dhw_stops_noignitionatstart_laststops": {
-        "name": "Branderstops SWW: Geen ontsteking bij start (laatst)"
+        "name": "Branderstops SWW: Geen ontsteking bij start (laatste stops)"
       },
       "dhw_stops_noionizationatstart_allstops": {
         "name": "Branderstops SWW: Geen ionisatie bij start (totaal)"
       },
       "dhw_stops_noionizationatstart_laststops": {
-        "name": "Branderstops SWW: Geen ionisatie bij start (laatst)"
+        "name": "Branderstops SWW: Geen ionisatie bij start (laatste stops)"
       },
       "dhw_stops_normalstop_allstops": {
         "name": "Branderstops SWW: Normale uitschakeling (totaal)"
       },
       "dhw_stops_normalstop_laststops": {
-        "name": "Branderstops SWW: Normale uitschakeling (laatst)"
+        "name": "Branderstops SWW: Normale uitschakeling (laatste stops)"
       },
       "dhw_stops_safetyshutdown_allstops": {
         "name": "Branderstops SWW: Veiligheidsuitschakeling (totaal)"
       },
       "dhw_stops_safetyshutdown_laststops": {
-        "name": "Branderstops SWW: Veiligheidsuitschakeling (laatst)"
+        "name": "Branderstops SWW: Veiligheidsuitschakeling (laatste stops)"
       },
       "dhw_stops_safetyshutdownerrorshutdown_allstops": {
         "name": "Branderstops SWW: Storingsuitschakeling (totaal)"
       },
       "dhw_stops_safetyshutdownerrorshutdown_laststops": {
-        "name": "Branderstops SWW: Storingsuitschakeling (laatst)"
+        "name": "Branderstops SWW: Storingsuitschakeling (laatste stops)"
       },
       "dhw_stops_safetytime_allstops": {
         "name": "Branderstops SWW: Veiligheidstijd (totaal)"
       },
       "dhw_stops_safetytime_laststops": {
-        "name": "Branderstops SWW: Veiligheidstijd (laatst)"
+        "name": "Branderstops SWW: Veiligheidstijd (laatste stops)"
       },
       "dhw_stops_stabilisationprocess_allstops": {
         "name": "Branderstops SWW: Stabilisatie (totaal)"
       },
       "dhw_stops_stabilisationprocess_laststops": {
-        "name": "Branderstops SWW: Stabilisatie (laatst)"
+        "name": "Branderstops SWW: Stabilisatie (laatste stops)"
       },
       "dhw_stops_temperaturemonitor_allstops": {
         "name": "Branderstops SWW: Temperatuurbewaking (totaal)"
       },
       "dhw_stops_temperaturemonitor_laststops": {
-        "name": "Branderstops SWW: Temperatuurbewaking (laatst)"
+        "name": "Branderstops SWW: Temperatuurbewaking (laatste stops)"
       },
       "dhw_stops_temperaturemonitorionizationcomparison_allstops": {
         "name": "Branderstops SWW: Temperatuurbewaking ionisatie (totaal)"
       },
       "dhw_stops_temperaturemonitorionizationcomparison_laststops": {
-        "name": "Branderstops SWW: Temperatuurbewaking ionisatie (laatst)"
+        "name": "Branderstops SWW: Temperatuurbewaking ionisatie (laatste stops)"
       },
       "dhw_stops_time_allstops": {
-        "name": "Branderstops SWW: Tijdslimiet (totaal)"
+        "name": "Branderlooptijd SWW (totaal)"
       },
       "dhw_stops_time_laststops": {
-        "name": "Branderstops SWW: Tijdslimiet (laatst)"
+        "name": "Branderlooptijd SWW (laatste stops)"
       },
       "dhw_stops_undervoltage_allstops": {
         "name": "Branderstops SWW: Onderspanning (totaal)"
       },
       "dhw_stops_undervoltage_laststops": {
-        "name": "Branderstops SWW: Onderspanning (laatst)"
+        "name": "Branderstops SWW: Onderspanning (laatste stops)"
       },
       "gas_energy_dhw_currentday": {
         "name": "Gasenergie SWW vandaag"

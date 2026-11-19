@@ -245,91 +245,91 @@
         "name": "Brennerstopps: Flammenverlust im Betrieb (gesamt)"
       },
       "burner_stops_flamelossduringoperation_laststops": {
-        "name": "Brennerstopps: Flammenverlust im Betrieb (zuletzt)"
+        "name": "Brennerstopps: Flammenverlust im Betrieb (letzte Stopps)"
       },
       "burner_stops_fluegastemperaturesensor_allstops": {
         "name": "Brennerstopps: Abgastemperaturfühler (gesamt)"
       },
       "burner_stops_fluegastemperaturesensor_laststops": {
-        "name": "Brennerstopps: Abgastemperaturfühler (zuletzt)"
+        "name": "Brennerstopps: Abgastemperaturfühler (letzte Stopps)"
       },
       "burner_stops_ionizationalignment_allstops": {
         "name": "Brennerstopps: Ionisationsabgleich (gesamt)"
       },
       "burner_stops_ionizationalignment_laststops": {
-        "name": "Brennerstopps: Ionisationsabgleich (zuletzt)"
+        "name": "Brennerstopps: Ionisationsabgleich (letzte Stopps)"
       },
       "burner_stops_nogasatstart_allstops": {
         "name": "Brennerstopps: Kein Gas beim Start (gesamt)"
       },
       "burner_stops_nogasatstart_laststops": {
-        "name": "Brennerstopps: Kein Gas beim Start (zuletzt)"
+        "name": "Brennerstopps: Kein Gas beim Start (letzte Stopps)"
       },
       "burner_stops_noignitionatstart_allstops": {
         "name": "Brennerstopps: Keine Zündung beim Start (gesamt)"
       },
       "burner_stops_noignitionatstart_laststops": {
-        "name": "Brennerstopps: Keine Zündung beim Start (zuletzt)"
+        "name": "Brennerstopps: Keine Zündung beim Start (letzte Stopps)"
       },
       "burner_stops_noionizationatstart_allstops": {
         "name": "Brennerstopps: Keine Ionisation beim Start (gesamt)"
       },
       "burner_stops_noionizationatstart_laststops": {
-        "name": "Brennerstopps: Keine Ionisation beim Start (zuletzt)"
+        "name": "Brennerstopps: Keine Ionisation beim Start (letzte Stopps)"
       },
       "burner_stops_normalstop_allstops": {
         "name": "Brennerstopps: Normale Abschaltung (gesamt)"
       },
       "burner_stops_normalstop_laststops": {
-        "name": "Brennerstopps: Normale Abschaltung (zuletzt)"
+        "name": "Brennerstopps: Normale Abschaltung (letzte Stopps)"
       },
       "burner_stops_safetyshutdown_allstops": {
         "name": "Brennerstopps: Sicherheitsabschaltung (gesamt)"
       },
       "burner_stops_safetyshutdown_laststops": {
-        "name": "Brennerstopps: Sicherheitsabschaltung (zuletzt)"
+        "name": "Brennerstopps: Sicherheitsabschaltung (letzte Stopps)"
       },
       "burner_stops_safetyshutdownerrorshutdown_allstops": {
         "name": "Brennerstopps: Störabschaltung (gesamt)"
       },
       "burner_stops_safetyshutdownerrorshutdown_laststops": {
-        "name": "Brennerstopps: Störabschaltung (zuletzt)"
+        "name": "Brennerstopps: Störabschaltung (letzte Stopps)"
       },
       "burner_stops_safetytime_allstops": {
         "name": "Brennerstopps: Sicherheitszeit (gesamt)"
       },
       "burner_stops_safetytime_laststops": {
-        "name": "Brennerstopps: Sicherheitszeit (zuletzt)"
+        "name": "Brennerstopps: Sicherheitszeit (letzte Stopps)"
       },
       "burner_stops_stabilisationprocess_allstops": {
         "name": "Brennerstopps: Stabilisierung (gesamt)"
       },
       "burner_stops_stabilisationprocess_laststops": {
-        "name": "Brennerstopps: Stabilisierung (zuletzt)"
+        "name": "Brennerstopps: Stabilisierung (letzte Stopps)"
       },
       "burner_stops_temperaturemonitor_allstops": {
         "name": "Brennerstopps: Temperaturwächter (gesamt)"
       },
       "burner_stops_temperaturemonitor_laststops": {
-        "name": "Brennerstopps: Temperaturwächter (zuletzt)"
+        "name": "Brennerstopps: Temperaturwächter (letzte Stopps)"
       },
       "burner_stops_temperaturemonitorionizationcomparison_allstops": {
         "name": "Brennerstopps: Temperaturwächter Ionisation (gesamt)"
       },
       "burner_stops_temperaturemonitorionizationcomparison_laststops": {
-        "name": "Brennerstopps: Temperaturwächter Ionisation (zuletzt)"
+        "name": "Brennerstopps: Temperaturwächter Ionisation (letzte Stopps)"
       },
       "burner_stops_time_allstops": {
-        "name": "Brennerstopps: Zeitbegrenzung (gesamt)"
+        "name": "Brennerlaufzeit (gesamt)"
       },
       "burner_stops_time_laststops": {
-        "name": "Brennerstopps: Zeitbegrenzung (zuletzt)"
+        "name": "Brennerlaufzeit (letzte Stopps)"
       },
       "burner_stops_undervoltage_allstops": {
         "name": "Brennerstopps: Unterspannung (gesamt)"
       },
       "burner_stops_undervoltage_laststops": {
-        "name": "Brennerstopps: Unterspannung (zuletzt)"
+        "name": "Brennerstopps: Unterspannung (letzte Stopps)"
       },
       "circuit_target_supply_temperature": {
         "name": "Vorlauf-Solltemperatur Heizkreis {circuit}"
@@ -338,91 +338,91 @@
         "name": "Brennerstopps WW: Flammenverlust im Betrieb (gesamt)"
       },
       "dhw_stops_flamelossduringoperation_laststops": {
-        "name": "Brennerstopps WW: Flammenverlust im Betrieb (zuletzt)"
+        "name": "Brennerstopps WW: Flammenverlust im Betrieb (letzte Stopps)"
       },
       "dhw_stops_fluegastemperaturesensor_allstops": {
         "name": "Brennerstopps WW: Abgastemperaturfühler (gesamt)"
       },
       "dhw_stops_fluegastemperaturesensor_laststops": {
-        "name": "Brennerstopps WW: Abgastemperaturfühler (zuletzt)"
+        "name": "Brennerstopps WW: Abgastemperaturfühler (letzte Stopps)"
       },
       "dhw_stops_ionizationalignment_allstops": {
         "name": "Brennerstopps WW: Ionisationsabgleich (gesamt)"
       },
       "dhw_stops_ionizationalignment_laststops": {
-        "name": "Brennerstopps WW: Ionisationsabgleich (zuletzt)"
+        "name": "Brennerstopps WW: Ionisationsabgleich (letzte Stopps)"
       },
       "dhw_stops_nogasatstart_allstops": {
         "name": "Brennerstopps WW: Kein Gas beim Start (gesamt)"
       },
       "dhw_stops_nogasatstart_laststops": {
-        "name": "Brennerstopps WW: Kein Gas beim Start (zuletzt)"
+        "name": "Brennerstopps WW: Kein Gas beim Start (letzte Stopps)"
       },
       "dhw_stops_noignitionatstart_allstops": {
         "name": "Brennerstopps WW: Keine Zündung beim Start (gesamt)"
       },
       "dhw_stops_noignitionatstart_laststops": {
-        "name": "Brennerstopps WW: Keine Zündung beim Start (zuletzt)"
+        "name": "Brennerstopps WW: Keine Zündung beim Start (letzte Stopps)"
       },
       "dhw_stops_noionizationatstart_allstops": {
         "name": "Brennerstopps WW: Keine Ionisation beim Start (gesamt)"
       },
       "dhw_stops_noionizationatstart_laststops": {
-        "name": "Brennerstopps WW: Keine Ionisation beim Start (zuletzt)"
+        "name": "Brennerstopps WW: Keine Ionisation beim Start (letzte Stopps)"
       },
       "dhw_stops_normalstop_allstops": {
         "name": "Brennerstopps WW: Normale Abschaltung (gesamt)"
       },
       "dhw_stops_normalstop_laststops": {
-        "name": "Brennerstopps WW: Normale Abschaltung (zuletzt)"
+        "name": "Brennerstopps WW: Normale Abschaltung (letzte Stopps)"
       },
       "dhw_stops_safetyshutdown_allstops": {
         "name": "Brennerstopps WW: Sicherheitsabschaltung (gesamt)"
       },
       "dhw_stops_safetyshutdown_laststops": {
-        "name": "Brennerstopps WW: Sicherheitsabschaltung (zuletzt)"
+        "name": "Brennerstopps WW: Sicherheitsabschaltung (letzte Stopps)"
       },
       "dhw_stops_safetyshutdownerrorshutdown_allstops": {
         "name": "Brennerstopps WW: Störabschaltung (gesamt)"
       },
       "dhw_stops_safetyshutdownerrorshutdown_laststops": {
-        "name": "Brennerstopps WW: Störabschaltung (zuletzt)"
+        "name": "Brennerstopps WW: Störabschaltung (letzte Stopps)"
       },
       "dhw_stops_safetytime_allstops": {
         "name": "Brennerstopps WW: Sicherheitszeit (gesamt)"
       },
       "dhw_stops_safetytime_laststops": {
-        "name": "Brennerstopps WW: Sicherheitszeit (zuletzt)"
+        "name": "Brennerstopps WW: Sicherheitszeit (letzte Stopps)"
       },
       "dhw_stops_stabilisationprocess_allstops": {
         "name": "Brennerstopps WW: Stabilisierung (gesamt)"
       },
       "dhw_stops_stabilisationprocess_laststops": {
-        "name": "Brennerstopps WW: Stabilisierung (zuletzt)"
+        "name": "Brennerstopps WW: Stabilisierung (letzte Stopps)"
       },
       "dhw_stops_temperaturemonitor_allstops": {
         "name": "Brennerstopps WW: Temperaturwächter (gesamt)"
       },
       "dhw_stops_temperaturemonitor_laststops": {
-        "name": "Brennerstopps WW: Temperaturwächter (zuletzt)"
+        "name": "Brennerstopps WW: Temperaturwächter (letzte Stopps)"
       },
       "dhw_stops_temperaturemonitorionizationcomparison_allstops": {
         "name": "Brennerstopps WW: Temperaturwächter Ionisation (gesamt)"
       },
       "dhw_stops_temperaturemonitorionizationcomparison_laststops": {
-        "name": "Brennerstopps WW: Temperaturwächter Ionisation (zuletzt)"
+        "name": "Brennerstopps WW: Temperaturwächter Ionisation (letzte Stopps)"
       },
       "dhw_stops_time_allstops": {
-        "name": "Brennerstopps WW: Zeitbegrenzung (gesamt)"
+        "name": "Brennerlaufzeit WW (gesamt)"
       },
       "dhw_stops_time_laststops": {
-        "name": "Brennerstopps WW: Zeitbegrenzung (zuletzt)"
+        "name": "Brennerlaufzeit WW (letzte Stopps)"
       },
       "dhw_stops_undervoltage_allstops": {
         "name": "Brennerstopps WW: Unterspannung (gesamt)"
       },
       "dhw_stops_undervoltage_laststops": {
-        "name": "Brennerstopps WW: Unterspannung (zuletzt)"
+        "name": "Brennerstopps WW: Unterspannung (letzte Stopps)"
       },
       "gas_energy_dhw_currentday": {
         "name": "Gasenergie Warmwasser heute"

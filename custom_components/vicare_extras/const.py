@@ -123,8 +123,10 @@ BURNER_STOP_REASONS = {
     "stabilisationProcess": "Stabilisierung",
     "temperatureMonitor": "Temperaturwächter",
     "temperatureMonitorIonizationComparison": "Temperaturwächter Ionisation",
-    "time": "Zeitbegrenzung",
 }
+# Not a stop reason: `timeAllStops` / `timeLastStops` in the same feature is
+# the burner runtime in seconds over the same stops (see descriptions.py).
+BURNER_RUNTIME = "time"
 # Enabled by default (heating only); the rest is created disabled.
 BURNER_STOP_DEFAULT_ON = {
     "normalStop",
