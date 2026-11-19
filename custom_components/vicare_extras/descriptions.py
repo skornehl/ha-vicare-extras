@@ -20,6 +20,7 @@ from typing import Any
 from homeassistant.util import dt as dt_util
 
 from .const import (
+    BURNER_RUNTIME,
     BURNER_STOP_DEFAULT_ON,
     BURNER_STOP_REASONS,
     UNITS,
@@ -252,24 +253,30 @@ def _curated(dev: ExtrasDevice) -> list[Spec]:
                 )
             )
 
-    # --- burner stop reasons (heating + dhw), counters
-    for prefix, label, default_on in (
-        ("device.timeseries.burner.stops", "Brennerstopps", True),
-        ("device.timeseries.dhw.burner.stops", "Brennerstopps WW", False),
+    # --- burner stops (heating + dhw): one counter per stop reason, plus the
+    # burner runtime over the same stops. "AllStops" counts since the counter
+    # reset; "LastStops" covers the most recent stops (46 on a Vitodens 200),
+    # not a time window, so those values can fall.
+    for prefix, label, rt_label, default_on in (
+        ("device.timeseries.burner.stops", "Brennerstopps", "Brennerlaufzeit", True),
+        ("device.timeseries.dhw.burner.stops", "Brennerstopps WW", "Brennerlaufzeit WW", False),
     ):
         if not has(prefix):
             continue
+        props = feats[prefix].get("properties") or {}
+        key_base = f"{prefix.split('.')[2]}_stops"
+        windows = (
+            ("AllStops", "gesamt", "total_increasing"),
+            ("LastStops", "letzte Stopps", None),
+        )
         for reason, rlabel in BURNER_STOP_REASONS.items():
-            for suffix, slabel, sclass in (
-                ("AllStops", "gesamt", "total_increasing"),
-                ("LastStops", "zuletzt", None),
-            ):
+            for suffix, slabel, sclass in windows:
                 pname = f"{reason}{suffix}"
-                if pname not in (feats[prefix].get("properties") or {}):
+                if pname not in props:
                     continue
                 specs.append(
                     Spec(
-                        key=f"{prefix.split('.')[2]}_stops_{reason}_{suffix.lower()}",
+                        key=f"{key_base}_{reason}_{suffix.lower()}",
                         platform="sensor",
                         name=f"{label}: {rlabel} ({slabel})",
                         feature=prefix,
@@ -282,6 +289,26 @@ def _curated(dev: ExtrasDevice) -> list[Spec]:
                         icon="mdi:fire-off",
                     )
                 )
+        # `time{All,Last}Stops`: burner runtime in seconds, not a stop reason.
+        # The key keeps "time" so existing entities keep their unique_id.
+        for suffix, slabel, sclass in windows:
+            pname = f"{BURNER_RUNTIME}{suffix}"
+            if pname not in props:
+                continue
+            specs.append(
+                Spec(
+                    key=f"{key_base}_{BURNER_RUNTIME}_{suffix.lower()}",
+                    platform="sensor",
+                    name=f"{rt_label} ({slabel})",
+                    feature=prefix,
+                    value_fn=_value(pname),
+                    unit="s",
+                    device_class="duration",
+                    state_class=sclass,
+                    enabled_default=False,
+                    diagnostic=True,
+                )
+            )
 
     # --- DHW hygiene (legionella protection): enabled/temperature/time are
     # writable entities (switch, number, select, time); only "running" is

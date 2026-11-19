@@ -48,6 +48,13 @@ Since v0.7 the fetch time is this one sensor instead of an `api_data_from`
 attribute on every entity: an attribute that changes on every poll makes the
 recorder write a new row for every entity each time.
 
+Burner stops come in two windows: "total" counts since the counter reset,
+"last stops" covers the most recent stops (46 on a Vitodens 200), not a time
+span, so it can go down. The same features also report the burner runtime in
+seconds over both windows (`timeAllStops`, `timeLastStops`). These are
+duration sensors ("Burner runtime"), disabled by default; earlier versions
+mislabeled them as a stop reason "time limit".
+
 Every other enabled feature property that the core integration does not
 cover is created as a **disabled diagnostic entity**, so everything the API
 reports is reachable. Excluded on purpose: `device.setDefaultValues`
