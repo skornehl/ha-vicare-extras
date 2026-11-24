@@ -22,7 +22,7 @@ async def async_setup_entry(
     async_add_entities(
         ViCareExtrasBinarySensor(coordinator, dev, spec)
         for dev in coordinator.data.values()
-        for spec in build_specs(dev)
+        for spec in build_specs(dev, core_keys=coordinator.core_keys)
         if spec.platform == "binary_sensor"
     )
 
