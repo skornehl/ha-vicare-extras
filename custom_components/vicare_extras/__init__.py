@@ -13,6 +13,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 
 from .coordinator import ViCareExtrasCoordinator
+from .core_overlap import async_core_keys, remove_stale_entities, taken_over
 from .services import async_register_services
 
 PLATFORMS = [
@@ -36,6 +37,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ViCareExtrasConfigEntry)
         # created from the payload, so wait for it.
         raise ConfigEntryNotReady("ViCare has not fetched any data yet")
     entry.runtime_data = coordinator
+    # Weiche: values the installed core already provides are skipped.
+    coordinator.core_keys = await async_core_keys(hass)
+    skip, _ = taken_over(coordinator.core_keys)
+    remove_stale_entities(hass, list(coordinator.data), skip)
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     async_register_services(hass)
     entry.async_on_unload(entry.add_update_listener(_async_options_updated))

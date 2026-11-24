@@ -30,7 +30,7 @@ async def async_setup_entry(
     async_add_entities(
         ViCareExtrasSensor(coordinator, dev, spec)
         for dev in coordinator.data.values()
-        for spec in build_specs(dev, calorific)
+        for spec in build_specs(dev, calorific, coordinator.core_keys)
         if spec.platform == "sensor"
     )
     async_add_entities(

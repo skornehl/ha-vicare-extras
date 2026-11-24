@@ -126,8 +126,11 @@ class ViCareExtrasCoordinator(DataUpdateCoordinator[dict[str, ExtrasDevice]]):
             update_interval=SCAN_INTERVAL,
         )
         self.core_devices = {}
+        self.core_keys = frozenset()
 
     core_devices: dict[str, Any]
+    # (platform, description key) of the installed core vicare, see core_overlap.py
+    core_keys: frozenset[tuple[str, str]]
 
     async def _async_update_data(self) -> dict[str, ExtrasDevice]:
         vicare = _vicare_entry(self.hass)

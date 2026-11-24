@@ -28,6 +28,7 @@ from .const import (
     is_excluded,
 )
 from .coordinator import ExtrasDevice
+from .core_overlap import CoreKeys, taken_over
 from .schedules import format_day
 
 # Features represented by writable entities (switch/number/select/time).
@@ -583,8 +584,24 @@ def _translated(spec: Spec) -> Spec:
     return replace(spec, translation_key=_SCHEDULE_TODAY.get(spec.key, spec.key.lower()))
 
 
-def build_specs(dev: ExtrasDevice, calorific: float | None = None) -> list[Spec]:
-    """Return all entity specs for one device."""
-    curated = [_translated(s) for s in _curated(dev) + _gas_energy(dev, calorific)]
-    handled = {s.feature for s in curated if not s.key.startswith("gas_energy_")} | WRITABLE_FEATURES
+def build_specs(
+    dev: ExtrasDevice, calorific: float | None = None, core_keys: CoreKeys = frozenset()
+) -> list[Spec]:
+    """Return all entity specs for one device.
+
+    Entities the installed core integration already provides (core_keys, see
+    core_overlap.py) are left out, and their features are kept out of the
+    generic diagnostics too.
+    """
+    skip, core_features = taken_over(core_keys)
+    curated = [
+        _translated(s)
+        for s in _curated(dev) + _gas_energy(dev, calorific)
+        if s.key not in skip
+    ]
+    handled = (
+        {s.feature for s in curated if not s.key.startswith("gas_energy_")}
+        | WRITABLE_FEATURES
+        | core_features
+    )
     return curated + _generic(dev, handled)

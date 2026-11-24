@@ -101,6 +101,24 @@ Why not an efficiency sensor: Viessmann's "heat production" is exactly
 gas m³ × 10 kWh/m³ (checked against two years of data), so heat/gas would
 always be the same constant.
 
+## Values that moved into the core integration
+
+Some values started here and were later added to the core ViCare integration.
+ViCare Extras checks at startup which entity descriptions the installed core
+integration has. If the core already provides a value, the Extras entity is not
+created, its feature is not offered as a generic diagnostic either, and an old
+Extras entity of it is removed from the entity registry. With an older Home
+Assistant everything stays as before.
+
+| Extras entity | Core entity (since) |
+|---|---|
+| Internal boiler pump (`boiler_pump_internal`) | Internal pump, binary sensor (HA 2026.12, core #193054) |
+| Boiler pump target output (`boiler_pump_internal_target`) | Internal pump target modulation (HA 2026.12) |
+| generic `heating.boiler.pumps.internal.current` | Internal pump modulation (HA 2026.12) |
+
+Automations that use the Extras entity IDs have to be switched to the core
+entities after the update.
+
 ## Languages
 
 Entity names are translated (English, German, Dutch) and follow the language
