@@ -17,7 +17,6 @@ import voluptuous as vol
 
 from homeassistant.core import HomeAssistant, ServiceCall, ServiceResponse, SupportsResponse
 from homeassistant.helpers import config_validation as cv
-from homeassistant.helpers.service import async_register_admin_service
 
 from .commands import DAYS, async_execute, validation_error
 from .const import DOMAIN
@@ -204,11 +203,11 @@ def async_register_schedule_services(hass: HomeAssistant, helpers: Any) -> None:
             "summary": {d: format_day(week[d]) for d in DAYS},
         }
 
-    # Writes are admin-only (they change the heating system).
-    async_register_admin_service(hass, DOMAIN, "set_schedule_day", set_schedule_day, SCHEMA_SET_DAY)
-    async_register_admin_service(hass, DOMAIN, "copy_schedule_day", copy_schedule_day, SCHEMA_COPY_DAY)
-    async_register_admin_service(hass, DOMAIN, "reset_schedule_day", reset_schedule_day, SCHEMA_RESET_DAY)
-    async_register_admin_service(hass, DOMAIN, "reset_schedule", reset_schedule, SCHEMA_SCHEDULE_ONLY)
+    # Normal user actions, like the entities; only execute_command is admin-only.
+    hass.services.async_register(DOMAIN, "set_schedule_day", set_schedule_day, SCHEMA_SET_DAY)
+    hass.services.async_register(DOMAIN, "copy_schedule_day", copy_schedule_day, SCHEMA_COPY_DAY)
+    hass.services.async_register(DOMAIN, "reset_schedule_day", reset_schedule_day, SCHEMA_RESET_DAY)
+    hass.services.async_register(DOMAIN, "reset_schedule", reset_schedule, SCHEMA_SCHEDULE_ONLY)
     hass.services.async_register(
         DOMAIN,
         "get_schedule",

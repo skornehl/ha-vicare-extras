@@ -6,7 +6,7 @@ import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from homeassistant.config_entries import ConfigEntryState
-from homeassistant.exceptions import ServiceValidationError, Unauthorized
+from homeassistant.exceptions import HomeAssistantError, ServiceValidationError, Unauthorized
 from homeassistant.setup import async_setup_component
 
 from custom_components.vicare_extras.const import CONF_ALLOW_RAW_COMMANDS, DOMAIN
@@ -93,7 +93,7 @@ async def test_execute_command_allowed(extras_hass) -> None:
         task.cancel()
 
 
-async def test_write_services_are_admin_only(extras_hass, hass_read_only_user) -> None:
+async def test_execute_command_is_admin_only(extras_hass, hass_read_only_user) -> None:
     from homeassistant.core import Context
 
     await _setup(extras_hass, {CONF_ALLOW_RAW_COMMANDS: True})
@@ -105,11 +105,20 @@ async def test_write_services_are_admin_only(extras_hass, hass_read_only_user) -
             blocking=True,
             context=Context(user_id=hass_read_only_user.id),
         )
-    with pytest.raises(Unauthorized):
-        await extras_hass.services.async_call(
-            DOMAIN,
-            "cancel_holiday",
-            {"program": "holiday"},
-            blocking=True,
-            context=Context(user_id=hass_read_only_user.id),
-        )
+    # Holiday and schedule actions are normal user actions: never Unauthorized.
+    for service, data in (
+        ("cancel_holiday", {"program": "holiday"}),
+        ("reset_schedule", {"schedule": "dhw"}),
+    ):
+        try:
+            await extras_hass.services.async_call(
+                DOMAIN,
+                service,
+                data,
+                blocking=True,
+                context=Context(user_id=hass_read_only_user.id),
+            )
+        except Unauthorized:
+            pytest.fail(f"{service} must not be admin-only")
+        except (ServiceValidationError, HomeAssistantError):
+            pass

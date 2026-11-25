@@ -1,8 +1,9 @@
 """Services: holiday programs, schedules and a generic, validated command service.
 
-Registered once in async_setup (not per config entry). Every service that
-writes to the boiler is admin-only; `execute_command` additionally has to be
-allowed in the integration options.
+Registered once in async_setup (not per config entry). The holiday and
+schedule services are normal user actions, like the entities of this
+integration. `execute_command` can send any command, so it is admin-only and
+additionally has to be allowed in the integration options.
 """
 
 from __future__ import annotations
@@ -175,11 +176,11 @@ def async_register_services(hass: HomeAssistant) -> None:
             raise validation_error("raw_commands_disabled")
         await _run(hass, call, call.data["feature"], call.data["command"], call.data["params"])
 
-    async_register_admin_service(hass, DOMAIN, "set_holiday", set_holiday, SCHEMA_SET_HOLIDAY)
-    async_register_admin_service(
-        hass, DOMAIN, "change_holiday_end", change_holiday_end, SCHEMA_CHANGE_END
+    hass.services.async_register(DOMAIN, "set_holiday", set_holiday, SCHEMA_SET_HOLIDAY)
+    hass.services.async_register(
+        DOMAIN, "change_holiday_end", change_holiday_end, SCHEMA_CHANGE_END
     )
-    async_register_admin_service(hass, DOMAIN, "cancel_holiday", cancel_holiday, SCHEMA_CANCEL)
+    hass.services.async_register(DOMAIN, "cancel_holiday", cancel_holiday, SCHEMA_CANCEL)
     async_register_admin_service(hass, DOMAIN, "execute_command", execute_command, SCHEMA_EXECUTE)
     async_register_schedule_services(
         hass, SimpleNamespace(coordinator=coordinator, resolve_device=resolve_device)

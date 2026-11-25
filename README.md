@@ -79,9 +79,10 @@ A legionella trigger that runs on several (but not all) weekdays, set in the
 ViCare app, shows no day option; changing only its time is refused instead of
 silently turning it into a daily trigger.
 
-**All write actions are admin-only.** Automations and scripts started by the
-system are not affected; a non-admin user who runs a script that calls one of
-them gets "Unauthorized". `get_schedule` stays available to everyone.
+**`execute_command` is admin-only.** A non-admin user who runs a script that
+calls it gets "Unauthorized"; automations are not affected. The holiday and
+schedule actions are normal user actions, like the entities of this
+integration.
 
 **`execute_command` is opt-in.** It can send any command of any feature, so
 it is off for new installations. Turn it on in the integration options
