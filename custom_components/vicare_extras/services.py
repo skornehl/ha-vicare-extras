@@ -88,6 +88,10 @@ def resolve_device(
         raise validation_error("not_vicare_device", device=device.name_by_user or device.name)
     matches = [i for i, d in coord.data.items() if supports(d.features)]
     if not matches:
+        stale = [i for i, d in coord.data.items() if not d.features]
+        if stale:
+            # The device may support it, its data is just not current.
+            raise validation_error("no_current_data", device=", ".join(stale))
         raise validation_error("no_device_with_feature", feature=label)
     if len(matches) > 1:
         raise validation_error("multiple_devices", feature=label, count=len(matches))

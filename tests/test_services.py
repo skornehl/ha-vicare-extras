@@ -35,7 +35,15 @@ async def test_several_devices_need_device_id() -> None:
 
 
 async def test_no_device() -> None:
-    coordinator = FakeCoordinator({"a": device([], "a")})
+    coordinator = FakeCoordinator({"a": device([feature("heating.dhw.schedule")], "a")})
     with pytest.raises(ServiceValidationError) as err:
         resolve_device(None, coordinator, _supports(HOLIDAY), HOLIDAY, None)
     assert err.value.translation_key == "no_device_with_feature"
+
+
+async def test_stale_device_reports_missing_data() -> None:
+    coordinator = FakeCoordinator({"a": device([], "a")})
+    coordinator.data["a"].features = {}
+    with pytest.raises(ServiceValidationError) as err:
+        resolve_device(None, coordinator, _supports(HOLIDAY), HOLIDAY, None)
+    assert err.value.translation_key == "no_current_data"
