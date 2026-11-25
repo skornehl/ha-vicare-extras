@@ -8,7 +8,7 @@
           "calorific_value": "Calorific value (kWh/m³, optional)"
         },
         "data_description": {
-          "calorific_value": "From your gas bill (Brennwert). Enables gas energy sensors in kWh."
+          "calorific_value": "From your gas bill (Brennwert). Creates gas energy sensors in kWh for devices that report gas in m³. Do not change it later without reading the note in the options."
         }
       }
     },
@@ -17,10 +17,154 @@
       "single_instance_allowed": "ViCare Extras is already configured."
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "title": "ViCare Extras",
+        "description": "The gas energy sensors are running totals (total_increasing). A new calorific value rescales the whole total, so the long-term statistics and the Energy dashboard show a jump. For the Energy dashboard prefer the gas sensor in m³ of the ViCare integration with a price per m³.",
+        "data": {
+          "calorific_value": "Calorific value (kWh/m³)",
+          "allow_raw_commands": "Allow raw API commands (execute_command)"
+        },
+        "data_description": {
+          "calorific_value": "From your gas bill (Brennwert). Leave empty to remove the gas energy sensors.",
+          "allow_raw_commands": "Lets administrators send any command of any feature with the action vicare_extras.execute_command. Commands are still checked against the API's limits, and factory reset stays blocked. Leave off unless you need it."
+        }
+      }
+    }
+  },
   "issues": {
     "core_internals_changed": {
       "title": "ViCare Extras cannot read the ViCare integration",
       "description": "The internal structure of the core ViCare integration changed (probably after a Home Assistant update), so ViCare Extras cannot read its data any more. The core integration itself is unaffected. Please update ViCare Extras. Error: {error}"
+    }
+  },
+  "exceptions": {
+    "not_loaded": {
+      "message": "ViCare Extras is not loaded."
+    },
+    "unknown_device_id": {
+      "message": "Unknown device {device_id}."
+    },
+    "not_vicare_device": {
+      "message": "{device} is not a ViCare device."
+    },
+    "no_device_with_feature": {
+      "message": "No ViCare device reports {feature}."
+    },
+    "multiple_devices": {
+      "message": "{count} ViCare devices support {feature}. Please choose one with device_id."
+    },
+    "unknown_device": {
+      "message": "Unknown ViCare device {device}."
+    },
+    "no_current_data": {
+      "message": "There is no current data for ViCare device {device}: the ViCare integration has not fetched any recently. Please try again later."
+    },
+    "feature_missing": {
+      "message": "The device does not report the feature {feature}."
+    },
+    "feature_blocked": {
+      "message": "Commands on {feature} are blocked."
+    },
+    "unknown_command": {
+      "message": "{feature} has no command {command}. Available: {commands}."
+    },
+    "not_executable": {
+      "message": "{feature}.{command} cannot be executed in the current state of the system."
+    },
+    "unknown_params": {
+      "message": "Unknown parameters for {command}: {params}."
+    },
+    "missing_param": {
+      "message": "Parameter {param} is missing for {command}."
+    },
+    "param_not_number": {
+      "message": "{name} must be a number, not {value}."
+    },
+    "param_below_min": {
+      "message": "{name} = {value} is below the minimum {min}."
+    },
+    "param_above_max": {
+      "message": "{name} = {value} is above the maximum {max}."
+    },
+    "param_step": {
+      "message": "{name} = {value} does not match the step size {step} (starting at {base})."
+    },
+    "param_not_boolean": {
+      "message": "{name} must be true or false, not {value}."
+    },
+    "param_not_string": {
+      "message": "{name} must be text, not {value}."
+    },
+    "param_not_allowed": {
+      "message": "{name} = {value} is not allowed. Possible: {options}."
+    },
+    "param_bad_format": {
+      "message": "{name} = {value} has the wrong format."
+    },
+    "param_bad_regex": {
+      "message": "The format rule the API gives for {name} cannot be checked ({error}), so the command is not sent."
+    },
+    "param_unsupported_type": {
+      "message": "Parameter {name} has the type {type}, which ViCare Extras cannot validate, so the command is not sent."
+    },
+    "schedule_not_dict": {
+      "message": "{name} must be a schedule (day with time slots)."
+    },
+    "schedule_unknown_day": {
+      "message": "Unknown day {day} in the schedule."
+    },
+    "schedule_entries_not_list": {
+      "message": "{day}: the time slots must be a list."
+    },
+    "schedule_too_many": {
+      "message": "{day}: at most {max} time slots are allowed."
+    },
+    "schedule_bad_entry": {
+      "message": "{day}: slot {entry} needs start and end as HH:MM."
+    },
+    "schedule_start_24": {
+      "message": "{day}: a time slot cannot start at 24:00."
+    },
+    "schedule_bad_mode": {
+      "message": "{day}: mode {mode} is not allowed. Possible: {modes}."
+    },
+    "schedule_raster": {
+      "message": "{day}: times must be in steps of {resolution} minutes."
+    },
+    "schedule_end_before_start": {
+      "message": "{day}: the end must be after the start."
+    },
+    "schedule_overlap": {
+      "message": "{day}: the time slots overlap."
+    },
+    "command_failed": {
+      "message": "ViCare rejected {feature}.{command}: {error}"
+    },
+    "raw_commands_disabled": {
+      "message": "execute_command is switched off. An administrator can allow it in the ViCare Extras options."
+    },
+    "holiday_end_before_start": {
+      "message": "The end is before the start."
+    },
+    "unknown_schedule": {
+      "message": "Unknown schedule {schedule}."
+    },
+    "no_schedule": {
+      "message": "The device has no schedule {schedule}."
+    },
+    "mode_required": {
+      "message": "Please give a mode. Possible: {modes}."
+    },
+    "hygiene_disabled": {
+      "message": "Legionella protection is switched off, so the system reports no start time. Please switch it on first."
+    },
+    "hygiene_time_unknown": {
+      "message": "The current start time of the legionella protection is unknown."
+    },
+    "hygiene_multiple_weekdays": {
+      "message": "The legionella protection runs on several weekdays ({weekdays}). Changing only the time would make it daily, so please choose daily or one weekday first, or change it in the ViCare app."
     }
   },
   "services": {
@@ -42,7 +186,7 @@
         },
         "device_id": {
           "name": "Device",
-          "description": "ViCare device (optional, defaults to the one that supports it)."
+          "description": "ViCare device. Required when several devices support the action."
         }
       }
     },
@@ -60,7 +204,7 @@
         },
         "device_id": {
           "name": "Device",
-          "description": "ViCare device (optional)."
+          "description": "ViCare device. Required when several devices support the action."
         }
       }
     },
@@ -74,13 +218,13 @@
         },
         "device_id": {
           "name": "Device",
-          "description": "ViCare device (optional)."
+          "description": "ViCare device. Required when several devices support the action."
         }
       }
     },
     "execute_command": {
       "name": "Execute ViCare command",
-      "description": "Runs any command the ViCare API offers for a feature. Parameters are validated against the API's own constraints before sending.",
+      "description": "Runs any command the ViCare API offers for a feature. Parameters are validated against the API's own constraints before sending. Admin only, and it has to be allowed in the integration options.",
       "fields": {
         "feature": {
           "name": "Feature",
@@ -96,7 +240,7 @@
         },
         "device_id": {
           "name": "Device",
-          "description": "ViCare device (optional)."
+          "description": "ViCare device. Required when several devices support the action."
         }
       }
     },
@@ -106,7 +250,7 @@
       "fields": {
         "schedule": {
           "name": "Schedule",
-          "description": "heating (circuit 1), heating_circuit_N, dhw or circulation."
+          "description": "heating (lowest circuit with a schedule), heating_circuit_N, dhw or circulation."
         },
         "days": {
           "name": "Days",
@@ -118,7 +262,7 @@
         },
         "device_id": {
           "name": "Device",
-          "description": "ViCare device (optional)."
+          "description": "ViCare device. Required when several devices support the action."
         }
       }
     },
@@ -140,7 +284,7 @@
         },
         "device_id": {
           "name": "Device",
-          "description": "ViCare device (optional)."
+          "description": "ViCare device. Required when several devices support the action."
         }
       }
     },
@@ -158,7 +302,7 @@
         },
         "device_id": {
           "name": "Device",
-          "description": "ViCare device (optional)."
+          "description": "ViCare device. Required when several devices support the action."
         }
       }
     },
@@ -172,7 +316,7 @@
         },
         "device_id": {
           "name": "Device",
-          "description": "ViCare device (optional)."
+          "description": "ViCare device. Required when several devices support the action."
         }
       }
     },
@@ -186,7 +330,7 @@
         },
         "device_id": {
           "name": "Device",
-          "description": "ViCare device (optional)."
+          "description": "ViCare device. Required when several devices support the action."
         }
       }
     }
@@ -200,7 +344,7 @@
     },
     "schedule": {
       "options": {
-        "heating": "Heating circuit 1",
+        "heating": "Heating (lowest circuit with a schedule)",
         "dhw": "Domestic hot water",
         "circulation": "DHW circulation"
       }
@@ -214,19 +358,6 @@
         "fri": "Friday",
         "sat": "Saturday",
         "sun": "Sunday"
-      }
-    }
-  },
-  "options": {
-    "step": {
-      "init": {
-        "title": "ViCare Extras",
-        "data": {
-          "calorific_value": "Calorific value (kWh/m³)"
-        },
-        "data_description": {
-          "calorific_value": "From your gas bill (Brennwert). Leave empty to disable the gas energy sensors."
-        }
       }
     }
   },

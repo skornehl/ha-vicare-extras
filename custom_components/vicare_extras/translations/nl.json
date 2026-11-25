@@ -1,4 +1,366 @@
 {
+  "config": {
+    "step": {
+      "user": {
+        "title": "ViCare Extras",
+        "description": "Voegt de functies van de Viessmann-API toe die de ViCare-integratie niet aanbiedt. Gebruikt de bestaande ViCare-login en de al opgehaalde gegevens - geen extra API-aanroepen.",
+        "data": {
+          "calorific_value": "Calorische waarde (kWh/m³, optioneel)"
+        },
+        "data_description": {
+          "calorific_value": "Volgens je gasrekening. Maakt gasenergiesensoren in kWh aan voor apparaten die gas in m³ melden. Lees de opmerking in de opties voordat je deze later wijzigt."
+        }
+      }
+    },
+    "abort": {
+      "no_vicare": "Stel eerst de ViCare-integratie in.",
+      "single_instance_allowed": "ViCare Extras is al ingesteld."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "ViCare Extras",
+        "description": "De gasenergiesensoren zijn doorlopende totalen (total_increasing). Een nieuwe calorische waarde rekent het hele totaal om, waardoor de langetermijnstatistieken en het energiedashboard een sprong tonen. Gebruik voor het energiedashboard bij voorkeur de gassensor in m³ van de ViCare-integratie met een prijs per m³.",
+        "data": {
+          "calorific_value": "Calorische waarde (kWh/m³)",
+          "allow_raw_commands": "Willekeurige API-opdrachten toestaan (execute_command)"
+        },
+        "data_description": {
+          "calorific_value": "Volgens je gasrekening. Laat leeg om de gasenergiesensoren te verwijderen.",
+          "allow_raw_commands": "Staat beheerders toe om met de actie vicare_extras.execute_command elke opdracht van elke functie te verzenden. Opdrachten worden nog steeds gecontroleerd tegen de grenzen van de API, terugzetten naar fabrieksinstellingen blijft geblokkeerd. Laat uit tenzij je het nodig hebt."
+        }
+      }
+    }
+  },
+  "issues": {
+    "core_internals_changed": {
+      "title": "ViCare Extras kan de ViCare-integratie niet lezen",
+      "description": "De interne opbouw van de ViCare-integratie is gewijzigd (waarschijnlijk door een update van Home Assistant), daardoor kan ViCare Extras de gegevens niet meer lezen. De ViCare-integratie zelf werkt gewoon. Werk ViCare Extras bij. Fout: {error}"
+    }
+  },
+  "exceptions": {
+    "not_loaded": {
+      "message": "ViCare Extras is niet geladen."
+    },
+    "unknown_device_id": {
+      "message": "Onbekend apparaat {device_id}."
+    },
+    "not_vicare_device": {
+      "message": "{device} is geen ViCare-apparaat."
+    },
+    "no_device_with_feature": {
+      "message": "Geen ViCare-apparaat meldt {feature}."
+    },
+    "multiple_devices": {
+      "message": "{count} ViCare-apparaten ondersteunen {feature}. Kies er een met device_id."
+    },
+    "unknown_device": {
+      "message": "Onbekend ViCare-apparaat {device}."
+    },
+    "no_current_data": {
+      "message": "Er zijn geen actuele gegevens voor ViCare-apparaat {device}: de ViCare-integratie heeft recent niets opgehaald. Probeer het later opnieuw."
+    },
+    "feature_missing": {
+      "message": "Het apparaat meldt de functie {feature} niet."
+    },
+    "feature_blocked": {
+      "message": "Opdrachten op {feature} zijn geblokkeerd."
+    },
+    "unknown_command": {
+      "message": "{feature} kent de opdracht {command} niet. Beschikbaar: {commands}."
+    },
+    "not_executable": {
+      "message": "{feature}.{command} kan in de huidige toestand van de installatie niet worden uitgevoerd."
+    },
+    "unknown_params": {
+      "message": "Onbekende parameters voor {command}: {params}."
+    },
+    "missing_param": {
+      "message": "Parameter {param} ontbreekt voor {command}."
+    },
+    "param_not_number": {
+      "message": "{name} moet een getal zijn, niet {value}."
+    },
+    "param_below_min": {
+      "message": "{name} = {value} is kleiner dan het minimum {min}."
+    },
+    "param_above_max": {
+      "message": "{name} = {value} is groter dan het maximum {max}."
+    },
+    "param_step": {
+      "message": "{name} = {value} past niet bij de stapgrootte {step} (vanaf {base})."
+    },
+    "param_not_boolean": {
+      "message": "{name} moet true of false zijn, niet {value}."
+    },
+    "param_not_string": {
+      "message": "{name} moet tekst zijn, niet {value}."
+    },
+    "param_not_allowed": {
+      "message": "{name} = {value} is niet toegestaan. Mogelijk: {options}."
+    },
+    "param_bad_format": {
+      "message": "{name} = {value} heeft het verkeerde formaat."
+    },
+    "param_bad_regex": {
+      "message": "De formaatregel van de API voor {name} kan niet worden gecontroleerd ({error}), daarom wordt de opdracht niet verzonden."
+    },
+    "param_unsupported_type": {
+      "message": "Parameter {name} heeft het type {type}, dat ViCare Extras niet kan controleren, daarom wordt de opdracht niet verzonden."
+    },
+    "schedule_not_dict": {
+      "message": "{name} moet een tijdprogramma zijn (dag met tijdvakken)."
+    },
+    "schedule_unknown_day": {
+      "message": "Onbekende dag {day} in het tijdprogramma."
+    },
+    "schedule_entries_not_list": {
+      "message": "{day}: de tijdvakken moeten een lijst zijn."
+    },
+    "schedule_too_many": {
+      "message": "{day}: maximaal {max} tijdvakken toegestaan."
+    },
+    "schedule_bad_entry": {
+      "message": "{day}: tijdvak {entry} heeft start en end nodig als HH:MM."
+    },
+    "schedule_start_24": {
+      "message": "{day}: een tijdvak kan niet om 24:00 beginnen."
+    },
+    "schedule_bad_mode": {
+      "message": "{day}: mode {mode} is niet toegestaan. Mogelijk: {modes}."
+    },
+    "schedule_raster": {
+      "message": "{day}: tijden moeten in stappen van {resolution} minuten liggen."
+    },
+    "schedule_end_before_start": {
+      "message": "{day}: het einde moet na het begin liggen."
+    },
+    "schedule_overlap": {
+      "message": "{day}: de tijdvakken overlappen."
+    },
+    "command_failed": {
+      "message": "ViCare heeft {feature}.{command} geweigerd: {error}"
+    },
+    "raw_commands_disabled": {
+      "message": "execute_command is uitgeschakeld. Een beheerder kan het toestaan in de opties van ViCare Extras."
+    },
+    "holiday_end_before_start": {
+      "message": "Het einde ligt voor het begin."
+    },
+    "unknown_schedule": {
+      "message": "Onbekend tijdprogramma {schedule}."
+    },
+    "no_schedule": {
+      "message": "Het apparaat heeft geen tijdprogramma {schedule}."
+    },
+    "mode_required": {
+      "message": "Geef een mode op. Mogelijk: {modes}."
+    },
+    "hygiene_disabled": {
+      "message": "De legionellabescherming is uitgeschakeld, dan meldt de installatie geen starttijd. Schakel deze eerst in."
+    },
+    "hygiene_time_unknown": {
+      "message": "De huidige starttijd van de legionellabescherming is onbekend."
+    },
+    "hygiene_multiple_weekdays": {
+      "message": "De legionellabescherming loopt op meerdere weekdagen ({weekdays}). Alleen de tijd wijzigen zou hem dagelijks maken. Kies eerst dagelijks of één weekdag, of wijzig het in de ViCare-app."
+    }
+  },
+  "services": {
+    "set_holiday": {
+      "name": "Vakantieprogramma plannen",
+      "description": "Plant het vakantieprogramma (of vakantie thuis) van de ketel voor een periode.",
+      "fields": {
+        "program": {
+          "name": "Programma",
+          "description": "holiday = afwezig, holiday_at_home = thuis"
+        },
+        "start": {
+          "name": "Begin",
+          "description": "Eerste dag."
+        },
+        "end": {
+          "name": "Einde",
+          "description": "Laatste dag."
+        },
+        "device_id": {
+          "name": "Apparaat",
+          "description": "ViCare-apparaat. Nodig als meerdere apparaten de actie ondersteunen."
+        }
+      }
+    },
+    "change_holiday_end": {
+      "name": "Einde vakantie wijzigen",
+      "description": "Verschuift de einddatum van een gepland vakantieprogramma.",
+      "fields": {
+        "program": {
+          "name": "Programma",
+          "description": "Welk programma."
+        },
+        "end": {
+          "name": "Einde",
+          "description": "Nieuwe laatste dag."
+        },
+        "device_id": {
+          "name": "Apparaat",
+          "description": "ViCare-apparaat. Nodig als meerdere apparaten de actie ondersteunen."
+        }
+      }
+    },
+    "cancel_holiday": {
+      "name": "Vakantieprogramma annuleren",
+      "description": "Annuleert een gepland of lopend vakantieprogramma.",
+      "fields": {
+        "program": {
+          "name": "Programma",
+          "description": "Welk programma."
+        },
+        "device_id": {
+          "name": "Apparaat",
+          "description": "ViCare-apparaat. Nodig als meerdere apparaten de actie ondersteunen."
+        }
+      }
+    },
+    "execute_command": {
+      "name": "ViCare-opdracht uitvoeren",
+      "description": "Voert een willekeurige opdracht uit die de ViCare-API voor een functie aanbiedt. De parameters worden vóór het verzenden gecontroleerd tegen de grenzen van de API. Alleen voor beheerders en alleen als het in de opties van de integratie is toegestaan.",
+      "fields": {
+        "feature": {
+          "name": "Functie",
+          "description": "Naam van de functie, bijv. heating.dhw.temperature.hygiene."
+        },
+        "command": {
+          "name": "Opdracht",
+          "description": "Naam van de opdracht, bijv. setTemperature."
+        },
+        "params": {
+          "name": "Parameters",
+          "description": "Parameters van de opdracht als object."
+        },
+        "device_id": {
+          "name": "Apparaat",
+          "description": "ViCare-apparaat. Nodig als meerdere apparaten de actie ondersteunen."
+        }
+      }
+    },
+    "set_schedule_day": {
+      "name": "Dag(en) van tijdprogramma instellen",
+      "description": "Vervangt de tijdvakken van een of meer dagen van een tijdprogramma, de andere dagen blijven ongewijzigd. Zonder mode wordt de enige toegestane (on) of normal gebruikt.",
+      "fields": {
+        "schedule": {
+          "name": "Tijdprogramma",
+          "description": "heating (laagste verwarmingscircuit met tijdprogramma), heating_circuit_N, dhw (warm water) of circulation (circulatie)."
+        },
+        "days": {
+          "name": "Dagen",
+          "description": "Welke dagen."
+        },
+        "entries": {
+          "name": "Tijdvakken",
+          "description": "Lijst van tijdvakken met start, end (HH:MM) en optioneel mode, in stappen van 10 minuten, maximaal 4 per dag, zonder overlap."
+        },
+        "device_id": {
+          "name": "Apparaat",
+          "description": "ViCare-apparaat. Nodig als meerdere apparaten de actie ondersteunen."
+        }
+      }
+    },
+    "copy_schedule_day": {
+      "name": "Dag van tijdprogramma kopiëren",
+      "description": "Kopieert de tijdvakken van een dag naar andere dagen.",
+      "fields": {
+        "schedule": {
+          "name": "Tijdprogramma",
+          "description": "Welk tijdprogramma."
+        },
+        "source_day": {
+          "name": "Van dag",
+          "description": "Dag die gekopieerd wordt."
+        },
+        "target_days": {
+          "name": "Naar dagen",
+          "description": "Dagen die overschreven worden."
+        },
+        "device_id": {
+          "name": "Apparaat",
+          "description": "ViCare-apparaat. Nodig als meerdere apparaten de actie ondersteunen."
+        }
+      }
+    },
+    "reset_schedule_day": {
+      "name": "Dag van tijdprogramma resetten",
+      "description": "Zet een dag terug naar de fabrieksinstelling van de ketel voor dit tijdprogramma.",
+      "fields": {
+        "schedule": {
+          "name": "Tijdprogramma",
+          "description": "Welk tijdprogramma."
+        },
+        "day": {
+          "name": "Dag",
+          "description": "Dag die gereset wordt."
+        },
+        "device_id": {
+          "name": "Apparaat",
+          "description": "ViCare-apparaat. Nodig als meerdere apparaten de actie ondersteunen."
+        }
+      }
+    },
+    "reset_schedule": {
+      "name": "Hele tijdprogramma resetten",
+      "description": "Zet de hele week van een tijdprogramma terug naar de fabrieksinstelling van de ketel. Kan niet ongedaan worden gemaakt - sla het eerst op met get_schedule.",
+      "fields": {
+        "schedule": {
+          "name": "Tijdprogramma",
+          "description": "Welk tijdprogramma."
+        },
+        "device_id": {
+          "name": "Apparaat",
+          "description": "ViCare-apparaat. Nodig als meerdere apparaten de actie ondersteunen."
+        }
+      }
+    },
+    "get_schedule": {
+      "name": "Tijdprogramma opvragen",
+      "description": "Geeft een tijdprogramma (alle dagen, toegestane modes en grenzen) terug als antwoord van de actie.",
+      "fields": {
+        "schedule": {
+          "name": "Tijdprogramma",
+          "description": "Welk tijdprogramma."
+        },
+        "device_id": {
+          "name": "Apparaat",
+          "description": "ViCare-apparaat. Nodig als meerdere apparaten de actie ondersteunen."
+        }
+      }
+    }
+  },
+  "selector": {
+    "program": {
+      "options": {
+        "holiday": "Vakantie (afwezig)",
+        "holiday_at_home": "Vakantie thuis"
+      }
+    },
+    "schedule": {
+      "options": {
+        "heating": "Verwarming (laagste verwarmingscircuit met tijdprogramma)",
+        "dhw": "Warm water",
+        "circulation": "Circulatie"
+      }
+    },
+    "day": {
+      "options": {
+        "mon": "Maandag",
+        "tue": "Dinsdag",
+        "wed": "Woensdag",
+        "thu": "Donderdag",
+        "fri": "Vrijdag",
+        "sat": "Zaterdag",
+        "sun": "Zondag"
+      }
+    }
+  },
   "entity": {
     "sensor": {
       "api_data_from": {
