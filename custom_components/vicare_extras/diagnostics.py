@@ -32,9 +32,10 @@ TO_REDACT = {
     "longitude",
 }
 
-# Features whose whole property block is private.
+# Features whose whole property block is private. device.etn holds the
+# 16-digit manufacturing number of the appliance, so it is a serial too.
 _PRIVATE_FEATURES = re.compile(
-    r"(serial|identification|houseLocation|wifi|zigbee|\.name$|gateway\.devices|lan\.)",
+    r"(serial|identification|houseLocation|wifi|zigbee|\.name$|\.etn$|gateway\.devices|lan\.)",
     re.IGNORECASE,
 )
 

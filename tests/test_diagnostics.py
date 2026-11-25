@@ -11,7 +11,9 @@ from custom_components.vicare_extras.diagnostics import async_get_config_entry_d
 
 from .common import feature, num
 
-PRIVATE = ["7633107000000000", "88884444", "SERIAL7777X", "zigbee-0123456789abcdef", "52.52", "13.37", "a@b.c", "aa:bb:cc"]
+PRIVATE = [
+    "7999888777666555",
+    "7633107000000000", "88884444", "SERIAL7777X", "zigbee-0123456789abcdef", "52.52", "13.37", "a@b.c", "aa:bb:cc"]
 
 
 def _entry():
@@ -19,6 +21,7 @@ def _entry():
     features = {
         "device.serial": {**feature("device.serial", {"value": {"type": "string", "value": "7633107000000000"}}), "uri": uri, "gatewayId": "7633107000000000", "deviceId": "0"},
         "heating.boiler.serial": feature("heating.boiler.serial", {"value": {"type": "string", "value": "SERIAL7777X"}}),
+        "device.etn": feature("device.etn", {"value": {"type": "string", "value": "7999888777666555"}}),
         "heating.operating.programs.houseLocation": feature(
             "heating.operating.programs.houseLocation",
             {"latitude": num(52.52), "longitude": num(13.37)},
