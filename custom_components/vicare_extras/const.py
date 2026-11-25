@@ -11,10 +11,22 @@ VICARE_DOMAIN = "vicare"
 # Calorific value of the gas (kWh per m³, "Brennwert" on the gas bill).
 # Optional; when set, gas energy sensors in kWh are created.
 CONF_CALORIFIC_VALUE = "calorific_value"
+# Allow the generic `execute_command` service (any command of any feature).
+# Off for new installations; entries created before 1.0.0 are migrated with
+# it switched on so existing automations keep working.
+CONF_ALLOW_RAW_COMMANDS = "allow_raw_commands"
 
 # How often the already-fetched PyViCare cache is re-read. This never
 # touches the network - the core integration owns all API traffic.
 SCAN_INTERVAL = timedelta(seconds=30)
+
+# The cache is considered stale (entities unavailable) when the core
+# integration's last fetch is older than STALE_FACTOR x its update interval,
+# but never sooner than STALE_MIN (users may disable core polling and refresh
+# it from an automation at a slower pace).
+STALE_FACTOR = 3
+STALE_MIN = timedelta(minutes=5)
+CORE_DEFAULT_INTERVAL = timedelta(seconds=60)
 
 # Features the core `vicare` integration already turns into entities.
 # Derived from the PyViCare getters the core integration calls (HA 2026.9,
@@ -108,21 +120,24 @@ UNITS = {
     "second": "s",
 }
 
+# Recorder skips state attributes above 16 KiB; keep list attributes short.
+MAX_LIST_ATTRIBUTE = 20
+
 BURNER_STOP_REASONS = {
-    "normalStop": "Normale Abschaltung",
-    "flameLossDuringOperation": "Flammenverlust im Betrieb",
-    "noGasAtStart": "Kein Gas beim Start",
-    "noIgnitionAtStart": "Keine Zündung beim Start",
-    "noIonizationAtStart": "Keine Ionisation beim Start",
-    "safetyShutdown": "Sicherheitsabschaltung",
-    "safetyShutdownErrorShutdown": "Störabschaltung",
-    "safetyTime": "Sicherheitszeit",
-    "undervoltage": "Unterspannung",
-    "flueGasTemperatureSensor": "Abgastemperaturfühler",
-    "ionizationAlignment": "Ionisationsabgleich",
-    "stabilisationProcess": "Stabilisierung",
-    "temperatureMonitor": "Temperaturwächter",
-    "temperatureMonitorIonizationComparison": "Temperaturwächter Ionisation",
+    "normalStop": "Normal shutdown",
+    "flameLossDuringOperation": "Flame loss during operation",
+    "noGasAtStart": "No gas at start",
+    "noIgnitionAtStart": "No ignition at start",
+    "noIonizationAtStart": "No ionization at start",
+    "safetyShutdown": "Safety shutdown",
+    "safetyShutdownErrorShutdown": "Fault shutdown",
+    "safetyTime": "Safety time",
+    "undervoltage": "Undervoltage",
+    "flueGasTemperatureSensor": "Flue gas temperature sensor",
+    "ionizationAlignment": "Ionization calibration",
+    "stabilisationProcess": "Stabilisation",
+    "temperatureMonitor": "Temperature monitor",
+    "temperatureMonitorIonizationComparison": "Temperature monitor ionization",
 }
 # Not a stop reason: `timeAllStops` / `timeLastStops` in the same feature is
 # the burner runtime in seconds over the same stops (see descriptions.py).
@@ -137,17 +152,6 @@ BURNER_STOP_DEFAULT_ON = {
     "safetyShutdownErrorShutdown",
     "undervoltage",
 }
-
-WEEKDAYS_DE = {
-    "Mon": "Mo",
-    "Tue": "Di",
-    "Wed": "Mi",
-    "Thu": "Do",
-    "Fri": "Fr",
-    "Sat": "Sa",
-    "Sun": "So",
-}
-
 
 def is_covered(feature: str) -> bool:
     """Return True if the core integration already exposes this feature."""

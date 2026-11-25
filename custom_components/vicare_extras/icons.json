@@ -1,0 +1,353 @@
+{
+  "entity": {
+    "binary_sensor": {
+      "boiler_pump_internal": {
+        "default": "mdi:pump"
+      },
+      "circuit_program_forcedlastfromschedule": {
+        "default": "mdi:leaf"
+      },
+      "circuit_program_reducedenergysaving": {
+        "default": "mdi:leaf"
+      },
+      "circuit_program_summereco": {
+        "default": "mdi:leaf"
+      },
+      "circuit_schedule": {
+        "default": "mdi:calendar-week"
+      },
+      "circulation_schedule": {
+        "default": "mdi:calendar-week"
+      },
+      "device_external_lock": {
+        "default": "mdi:lock-alert"
+      },
+      "dhw_schedule": {
+        "default": "mdi:calendar-week"
+      },
+      "heating_external_lock": {
+        "default": "mdi:lock-alert"
+      },
+      "holiday": {
+        "default": "mdi:palm-tree"
+      },
+      "holiday_at_home": {
+        "default": "mdi:palm-tree"
+      }
+    },
+    "button": {
+      "dhw_hygiene_start": {
+        "default": "mdi:play-circle-outline"
+      }
+    },
+    "number": {
+      "dhw_hygiene_temperature": {
+        "default": "mdi:thermometer-water"
+      }
+    },
+    "select": {
+      "dhw_hygiene_day": {
+        "default": "mdi:calendar-week"
+      }
+    },
+    "sensor": {
+      "boiler_pump_internal_target": {
+        "default": "mdi:pump"
+      },
+      "burner_stops_flamelossduringoperation_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_flamelossduringoperation_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_fluegastemperaturesensor_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_fluegastemperaturesensor_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_ionizationalignment_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_ionizationalignment_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_nogasatstart_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_nogasatstart_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_noignitionatstart_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_noignitionatstart_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_noionizationatstart_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_noionizationatstart_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_normalstop_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_normalstop_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_safetyshutdown_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_safetyshutdown_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_safetyshutdownerrorshutdown_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_safetyshutdownerrorshutdown_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_safetytime_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_safetytime_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_stabilisationprocess_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_stabilisationprocess_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_temperaturemonitor_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_temperaturemonitor_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_temperaturemonitorionizationcomparison_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_temperaturemonitorionizationcomparison_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_undervoltage_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "burner_stops_undervoltage_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "circuit_target_supply_temperature": {
+        "default": "mdi:thermometer-chevron-up"
+      },
+      "dhw_stops_flamelossduringoperation_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_flamelossduringoperation_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_fluegastemperaturesensor_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_fluegastemperaturesensor_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_ionizationalignment_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_ionizationalignment_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_nogasatstart_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_nogasatstart_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_noignitionatstart_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_noignitionatstart_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_noionizationatstart_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_noionizationatstart_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_normalstop_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_normalstop_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_safetyshutdown_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_safetyshutdown_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_safetyshutdownerrorshutdown_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_safetyshutdownerrorshutdown_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_safetytime_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_safetytime_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_stabilisationprocess_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_stabilisationprocess_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_temperaturemonitor_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_temperaturemonitor_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_temperaturemonitorionizationcomparison_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_temperaturemonitorionizationcomparison_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_undervoltage_allstops": {
+        "default": "mdi:fire-off"
+      },
+      "dhw_stops_undervoltage_laststops": {
+        "default": "mdi:fire-off"
+      },
+      "gas_energy_dhw_currentday": {
+        "default": "mdi:fire"
+      },
+      "gas_energy_dhw_currentmonth": {
+        "default": "mdi:fire"
+      },
+      "gas_energy_dhw_currentyear": {
+        "default": "mdi:fire"
+      },
+      "gas_energy_dhw_lastmonth": {
+        "default": "mdi:fire"
+      },
+      "gas_energy_dhw_lastyear": {
+        "default": "mdi:fire"
+      },
+      "gas_energy_heating_currentday": {
+        "default": "mdi:fire"
+      },
+      "gas_energy_heating_currentmonth": {
+        "default": "mdi:fire"
+      },
+      "gas_energy_heating_currentyear": {
+        "default": "mdi:fire"
+      },
+      "gas_energy_heating_lastmonth": {
+        "default": "mdi:fire"
+      },
+      "gas_energy_heating_lastyear": {
+        "default": "mdi:fire"
+      },
+      "heat_production_dhw_currentday": {
+        "default": "mdi:fire"
+      },
+      "heat_production_dhw_currentmonth": {
+        "default": "mdi:fire"
+      },
+      "heat_production_dhw_currentyear": {
+        "default": "mdi:fire"
+      },
+      "heat_production_dhw_lastmonth": {
+        "default": "mdi:fire"
+      },
+      "heat_production_dhw_lastsevendays": {
+        "default": "mdi:fire"
+      },
+      "heat_production_dhw_lastyear": {
+        "default": "mdi:fire"
+      },
+      "heat_production_heating_currentday": {
+        "default": "mdi:fire"
+      },
+      "heat_production_heating_currentmonth": {
+        "default": "mdi:fire"
+      },
+      "heat_production_heating_currentyear": {
+        "default": "mdi:fire"
+      },
+      "heat_production_heating_lastmonth": {
+        "default": "mdi:fire"
+      },
+      "heat_production_heating_lastsevendays": {
+        "default": "mdi:fire"
+      },
+      "heat_production_heating_lastyear": {
+        "default": "mdi:fire"
+      },
+      "messages_info": {
+        "default": "mdi:message-alert-outline"
+      },
+      "messages_service": {
+        "default": "mdi:message-alert-outline"
+      },
+      "messages_status": {
+        "default": "mdi:message-alert-outline"
+      },
+      "schedule_today_circuit": {
+        "default": "mdi:calendar-today"
+      },
+      "schedule_today_circulation": {
+        "default": "mdi:calendar-today"
+      },
+      "schedule_today_dhw": {
+        "default": "mdi:calendar-today"
+      }
+    },
+    "switch": {
+      "dhw_hygiene": {
+        "default": "mdi:bacteria-outline"
+      }
+    },
+    "time": {
+      "dhw_hygiene_start_time": {
+        "default": "mdi:clock-outline"
+      }
+    }
+  },
+  "services": {
+    "set_holiday": {
+      "service": "mdi:palm-tree"
+    },
+    "change_holiday_end": {
+      "service": "mdi:calendar-end"
+    },
+    "cancel_holiday": {
+      "service": "mdi:calendar-remove"
+    },
+    "execute_command": {
+      "service": "mdi:console"
+    },
+    "set_schedule_day": {
+      "service": "mdi:calendar-edit"
+    },
+    "copy_schedule_day": {
+      "service": "mdi:content-copy"
+    },
+    "reset_schedule_day": {
+      "service": "mdi:calendar-refresh"
+    },
+    "reset_schedule": {
+      "service": "mdi:restore"
+    },
+    "get_schedule": {
+      "service": "mdi:calendar-search"
+    }
+  }
+}

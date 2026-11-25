@@ -13,19 +13,16 @@ from datetime import time
 from typing import Any
 
 from homeassistant.components.button import ButtonEntity
-from homeassistant.components.number import NumberEntity, NumberMode
+from homeassistant.components.number import NumberDeviceClass, NumberEntity, NumberMode
 from homeassistant.components.select import SelectEntity
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.components.time import TimeEntity
 from homeassistant.const import EntityCategory, UnitOfTemperature
-from homeassistant.exceptions import ServiceValidationError
-from homeassistant.helpers.device_registry import DeviceInfo
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .commands import async_execute
-from .const import VICARE_DOMAIN
+from .commands import async_execute, validation_error
 from .coordinator import ExtrasDevice, ViCareExtrasCoordinator
 from .descriptions import prop
+from .entity import ViCareExtrasBaseEntity
 
 F_HYGIENE = "heating.dhw.hygiene"
 F_TRIGGER = "heating.dhw.hygiene.trigger"
@@ -44,32 +41,37 @@ WEEKDAYS = {
     "Sun": "sun",
 }
 
+# unique-id key per feature, for the registry cleanup in __init__.py
+HYGIENE_KEYS = {
+    F_HYGIENE: ("dhw_hygiene_enabled", "dhw_hygiene_activate"),
+    F_TEMP: ("dhw_hygiene_temperature",),
+    F_TRIGGER: ("dhw_hygiene_day", "dhw_hygiene_time"),
+}
 
-def hygiene_devices(coordinator: ViCareExtrasCoordinator, feature: str) -> list[ExtrasDevice]:
-    return [d for d in coordinator.data.values() if feature in d.features]
+
+def hygiene_keys(device: ExtrasDevice) -> set[str]:
+    """Unique-id keys of the hygiene entities this device gets."""
+    return {key for feature, keys in HYGIENE_KEYS.items() if feature in device.features for key in keys}
 
 
-class HygieneEntity(CoordinatorEntity[ViCareExtrasCoordinator]):
+def is_daily(weekdays: list[str]) -> bool:
+    """No weekday or all seven: the trigger runs every day."""
+    return len(weekdays) in (0, len(WEEKDAYS))
+
+
+class HygieneEntity(ViCareExtrasBaseEntity):
     """Base for writable hygiene entities."""
 
-    _attr_has_entity_name = True
     _attr_entity_category = EntityCategory.CONFIG
     _feature_name: str
     _key: str
 
     def __init__(self, coordinator: ViCareExtrasCoordinator, device: ExtrasDevice) -> None:
-        super().__init__(coordinator)
-        self._identifier = device.identifier
-        self._attr_unique_id = f"{device.identifier}-extras-{self._key}"
-        self._attr_device_info = DeviceInfo(identifiers={(VICARE_DOMAIN, device.identifier)})
-
-    def feature(self, name: str | None = None) -> dict[str, Any] | None:
-        dev = (self.coordinator.data or {}).get(self._identifier)
-        return dev.features.get(name or self._feature_name) if dev else None
+        super().__init__(coordinator, device, self._key)
 
     @property
     def available(self) -> bool:
-        return super().available and self.feature() is not None
+        return super().available and self.feature(self._feature_name) is not None
 
     async def run(
         self,
@@ -92,10 +94,7 @@ class HygieneEntity(CoordinatorEntity[ViCareExtrasCoordinator]):
     def require_enabled(self) -> None:
         f = self.feature(F_HYGIENE)
         if f is not None and prop(f, "enabled") is False:
-            raise ServiceValidationError(
-                "Legionellenschutz ist deaktiviert - die Anlage meldet dann keinen "
-                "Startzeitpunkt. Bitte zuerst einschalten."
-            )
+            raise validation_error("hygiene_disabled")
 
     async def set_trigger(self, hour: int, minute: int, weekdays: list[str]) -> None:
         optimistic = {"startHour": hour, "startMinute": minute, "weekdays": weekdays}
@@ -106,10 +105,14 @@ class HygieneEntity(CoordinatorEntity[ViCareExtrasCoordinator]):
                 {"startHour": hour, "startMinute": minute, "weekday": weekdays[0]},
                 optimistic,
             )
-        else:
+        elif is_daily(weekdays):
             await self.run(
                 F_TRIGGER, "triggerDaily", {"startHour": hour, "startMinute": minute}, optimistic
             )
+        else:
+            # Several (but not all) weekdays: there is no command that keeps
+            # them, triggerDaily would silently change the plan.
+            raise validation_error("hygiene_multiple_weekdays", weekdays=", ".join(weekdays))
 
 
 # ---------------------------------------------------------------- switch
@@ -119,12 +122,12 @@ class HygieneSwitch(HygieneEntity, SwitchEntity):
     _feature_name = F_HYGIENE
     _key = "dhw_hygiene_enabled"
     _attr_translation_key = "dhw_hygiene"
-    _attr_icon = "mdi:bacteria-outline"
 
     @property
     def is_on(self) -> bool | None:
-        f = self.feature()
-        return None if f is None else bool(prop(f, "enabled"))
+        f = self.feature(F_HYGIENE)
+        enabled = None if f is None else prop(f, "enabled")
+        return None if enabled is None else bool(enabled)
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         await self.run(F_HYGIENE, "setEnabled", {"enabled": True}, {"enabled": True})
@@ -140,7 +143,6 @@ class HygieneStartButton(HygieneEntity, ButtonEntity):
     _feature_name = F_HYGIENE
     _key = "dhw_hygiene_activate"
     _attr_translation_key = "dhw_hygiene_start"
-    _attr_icon = "mdi:play-circle-outline"
     _attr_entity_category = None
 
     async def async_press(self) -> None:
@@ -154,12 +156,12 @@ class HygieneTemperature(HygieneEntity, NumberEntity):
     _feature_name = F_TEMP
     _key = "dhw_hygiene_temperature"
     _attr_translation_key = "dhw_hygiene_temperature"
+    _attr_device_class = NumberDeviceClass.TEMPERATURE
     _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
     _attr_mode = NumberMode.BOX
-    _attr_icon = "mdi:thermometer-water"
 
     def _constraints(self) -> dict[str, Any]:
-        f = self.feature() or {}
+        f = self.feature(F_TEMP) or {}
         cmd = (f.get("commands") or {}).get("setTemperature") or {}
         return ((cmd.get("params") or {}).get("targetTemperature") or {}).get("constraints") or {}
 
@@ -177,7 +179,7 @@ class HygieneTemperature(HygieneEntity, NumberEntity):
 
     @property
     def native_value(self) -> float | None:
-        f = self.feature()
+        f = self.feature(F_TEMP)
         return None if f is None else prop(f, "value")
 
     async def async_set_native_value(self, value: float) -> None:
@@ -192,7 +194,6 @@ class HygieneDay(HygieneEntity, SelectEntity):
     _feature_name = F_TRIGGER
     _key = "dhw_hygiene_day"
     _attr_translation_key = "dhw_hygiene_day"
-    _attr_icon = "mdi:calendar-week"
     _attr_options = [DAILY, *WEEKDAYS.values()]
 
     @property
@@ -202,13 +203,21 @@ class HygieneDay(HygieneEntity, SelectEntity):
             return None
         if len(days) == 1:
             return WEEKDAYS.get(days[0])
-        return DAILY
+        if is_daily(days):
+            return DAILY
+        # 2-6 weekdays (set in the ViCare app) cannot be shown as one option.
+        return None
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        _, _, days = self.trigger_state()
+        return {"weekdays": [WEEKDAYS.get(d, d) for d in days]}
 
     async def async_select_option(self, option: str) -> None:
         self.require_enabled()
         hour, minute, _ = self.trigger_state()
         if hour is None or minute is None:
-            raise ServiceValidationError("Aktueller Startzeitpunkt unbekannt")
+            raise validation_error("hygiene_time_unknown")
         days = [] if option == DAILY else [k for k, v in WEEKDAYS.items() if v == option]
         await self.set_trigger(hour, minute, days)
 
@@ -220,7 +229,6 @@ class HygieneStartTime(HygieneEntity, TimeEntity):
     _feature_name = F_TRIGGER
     _key = "dhw_hygiene_time"
     _attr_translation_key = "dhw_hygiene_start_time"
-    _attr_icon = "mdi:clock-outline"
 
     @property
     def native_value(self) -> time | None:

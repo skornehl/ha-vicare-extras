@@ -1,7 +1,7 @@
 """Which entities to create from a device's feature payload.
 
 Two layers:
-1. Curated specs: German names, units, device classes, enabled by default
+1. Curated specs: translated names, units, device classes, enabled by default
    where useful (heat production, malfunction, messages, hygiene, holiday,
    schedules, burner stop reasons, ...).
 2. Generic specs: every remaining enabled feature property that the core
@@ -13,7 +13,8 @@ Two layers:
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, replace
+import json
 import re
 from typing import Any
 
@@ -23,12 +24,13 @@ from .const import (
     BURNER_RUNTIME,
     BURNER_STOP_DEFAULT_ON,
     BURNER_STOP_REASONS,
+    MAX_LIST_ATTRIBUTE,
     UNITS,
     is_covered,
     is_excluded,
 )
 from .coordinator import ExtrasDevice
-from .core_overlap import CoreKeys, taken_over
+from .core_overlap import NO_OVERLAP, Overlap
 from .schedules import format_day
 
 # Features represented by writable entities (switch/number/select/time).
@@ -68,10 +70,9 @@ class Spec:
     state_class: str | None = None
     enabled_default: bool = True
     diagnostic: bool = False
-    icon: str | None = None
-    extra: dict[str, Any] = field(default_factory=dict, compare=False, hash=False)
     # Translated entity name (translations/*.json, entity.<platform>.<key>);
-    # `name` stays as the fallback and for the generic diagnostics.
+    # `name` is the English fallback and the name of generic diagnostics.
+    # Icons come from icons.json by the same key.
     translation_key: str | None = None
     placeholders: dict[str, str] | None = None
 
@@ -84,8 +85,38 @@ def _active(f: Feature) -> Any:
     return prop(f, "active")
 
 
+# Attributes above ~16 KiB are not recorded; stay well below.
+_MAX_ATTRIBUTE_JSON = 8192
+
+
+def bounded(value: Any) -> tuple[Any, bool]:
+    """Return (value, truncated) with lists cut to MAX_LIST_ATTRIBUTE items.
+
+    Anything still too large for the recorder is dropped (None, True).
+    """
+    truncated = False
+    if isinstance(value, list) and len(value) > MAX_LIST_ATTRIBUTE:
+        value, truncated = value[:MAX_LIST_ATTRIBUTE], True
+    try:
+        size = len(json.dumps(value, default=str))
+    except (TypeError, ValueError):
+        return None, True
+    if size > _MAX_ATTRIBUTE_JSON:
+        return None, True
+    return value, truncated
+
+
 def _entries_attrs(f: Feature) -> dict[str, Any]:
-    return {"entries": prop(f, "entries")}
+    entries, truncated = bounded(prop(f, "entries"))
+    attrs: dict[str, Any] = {"entries": entries}
+    if truncated:
+        total = prop(f, "entries")
+        attrs["entries_total"] = len(total) if isinstance(total, list) else None
+    return attrs
+
+
+def _estimate_note(f: Feature) -> dict[str, Any]:
+    return {"note": "Viessmann estimate: gas m³ × 10 kWh/m³, not measured"}
 
 
 def _count_entries(f: Feature) -> int | None:
@@ -118,31 +149,30 @@ def _curated(dev: ExtrasDevice) -> list[Spec]:
 
     # --- heat produced (kWh). Viessmann derives this as gas m³ x 10 kWh/m³,
     # it is an estimate, not a measurement (see _gas_energy).
-    for circuit, label in (("heating", "Heizung"), ("dhw", "Warmwasser")):
+    for circuit, label in (("heating", "heating"), ("dhw", "hot water")):
         fname = f"heating.heat.production.summary.{circuit}"
         if not has(fname):
             continue
         for p, plabel, total, on in (
-            ("currentDay", "heute", True, True),
-            ("lastSevenDays", "letzte 7 Tage", False, False),
-            ("currentMonth", "diesen Monat", True, True),
-            ("lastMonth", "letzten Monat", False, False),
-            ("currentYear", "dieses Jahr", True, True),
-            ("lastYear", "letztes Jahr", False, False),
+            ("currentDay", "today", True, True),
+            ("lastSevenDays", "last 7 days", False, False),
+            ("currentMonth", "this month", True, True),
+            ("lastMonth", "last month", False, False),
+            ("currentYear", "this year", True, True),
+            ("lastYear", "last year", False, False),
         ):
             specs.append(
                 Spec(
                     key=f"heat_production_{circuit}_{p}",
                     platform="sensor",
-                    name=f"Erzeugte Wärme {label} {plabel}",
+                    name=f"Heat produced {label} {plabel}",
                     feature=fname,
                     value_fn=_value(p),
                     unit="kWh",
                     device_class="energy" if total else None,
                     state_class="total_increasing" if total else None,
                     enabled_default=on,
-                    icon="mdi:fire",
-                    attrs_fn=lambda f: {"hinweis": "Viessmann-Schätzung: Gas m³ × 10 kWh/m³, nicht gemessen"},
+                    attrs_fn=_estimate_note,
                 )
             )
 
@@ -154,7 +184,7 @@ def _curated(dev: ExtrasDevice) -> list[Spec]:
             Spec(
                 key="hydraulic_separator_temperature",
                 platform="sensor",
-                name="Temperatur hydraulische Weiche",
+                name="Hydraulic separator temperature",
                 feature=fname,
                 value_fn=_value("value"),
                 unit="°C",
@@ -175,13 +205,12 @@ def _curated(dev: ExtrasDevice) -> list[Spec]:
             Spec(
                 key=f"circuit_{m.group(1)}_target_supply_temperature",
                 platform="sensor",
-                name=f"Vorlauf-Solltemperatur Heizkreis {m.group(1)}",
+                name=f"Target supply temperature circuit {m.group(1)}",
                 feature=fname,
                 value_fn=_value("value"),
                 unit="°C",
                 device_class="temperature",
                 state_class="measurement",
-                icon="mdi:thermometer-chevron-up",
             )
         )
 
@@ -192,11 +221,10 @@ def _curated(dev: ExtrasDevice) -> list[Spec]:
             Spec(
                 key="boiler_pump_internal",
                 platform="binary_sensor",
-                name="Interne Kesselpumpe",
+                name="Internal boiler pump",
                 feature=fname,
                 value_fn=lambda f: None if prop(f, "status") is None else prop(f, "status") == "on",
                 device_class="running",
-                icon="mdi:pump",
             )
         )
     fname = "heating.boiler.pumps.internal.target"
@@ -205,20 +233,19 @@ def _curated(dev: ExtrasDevice) -> list[Spec]:
             Spec(
                 key="boiler_pump_internal_target",
                 platform="sensor",
-                name="Kesselpumpe Sollleistung",
+                name="Boiler pump target output",
                 feature=fname,
                 value_fn=_value("value"),
                 unit="%",
                 state_class="measurement",
-                icon="mdi:pump",
             )
         )
 
     # --- malfunction / locks
     for fname, key, name, dclass in (
-        ("device.lock.malfunction", "malfunction", "Störung", "problem"),
-        ("device.lock.external", "device_external_lock", "Externe Sperre Gerät", None),
-        ("heating.external.lock", "heating_external_lock", "Externe Sperre Heizung", None),
+        ("device.lock.malfunction", "malfunction", "Malfunction", "problem"),
+        ("device.lock.external", "device_external_lock", "External lock device", None),
+        ("heating.external.lock", "heating_external_lock", "External lock heating", None),
     ):
         if has(fname):
             specs.append(
@@ -229,15 +256,14 @@ def _curated(dev: ExtrasDevice) -> list[Spec]:
                     feature=fname,
                     value_fn=_active,
                     device_class=dclass,
-                    icon="mdi:lock-alert" if dclass is None else None,
                 )
             )
 
     # --- messages (status / service / info)
     for kind, name in (
-        ("status", "Statusmeldungen"),
-        ("service", "Wartungsmeldungen"),
-        ("info", "Infomeldungen"),
+        ("status", "Status messages"),
+        ("service", "Service messages"),
+        ("info", "Info messages"),
     ):
         fname = f"device.messages.{kind}.raw"
         if has(fname):
@@ -250,7 +276,6 @@ def _curated(dev: ExtrasDevice) -> list[Spec]:
                     value_fn=_count_entries,
                     attrs_fn=_entries_attrs,
                     state_class="measurement",
-                    icon="mdi:message-alert-outline",
                 )
             )
 
@@ -259,16 +284,16 @@ def _curated(dev: ExtrasDevice) -> list[Spec]:
     # reset; "LastStops" covers the most recent stops (46 on a Vitodens 200),
     # not a time window, so those values can fall.
     for prefix, label, rt_label, default_on in (
-        ("device.timeseries.burner.stops", "Brennerstopps", "Brennerlaufzeit", True),
-        ("device.timeseries.dhw.burner.stops", "Brennerstopps WW", "Brennerlaufzeit WW", False),
+        ("device.timeseries.burner.stops", "Burner stops", "Burner runtime", True),
+        ("device.timeseries.dhw.burner.stops", "Burner stops hot water", "Burner runtime hot water", False),
     ):
         if not has(prefix):
             continue
         props = feats[prefix].get("properties") or {}
         key_base = f"{prefix.split('.')[2]}_stops"
         windows = (
-            ("AllStops", "gesamt", "total_increasing"),
-            ("LastStops", "letzte Stopps", None),
+            ("AllStops", "total", "total_increasing"),
+            ("LastStops", "last stops", None),
         )
         for reason, rlabel in BURNER_STOP_REASONS.items():
             for suffix, slabel, sclass in windows:
@@ -287,7 +312,6 @@ def _curated(dev: ExtrasDevice) -> list[Spec]:
                         and suffix == "AllStops"
                         and reason in BURNER_STOP_DEFAULT_ON,
                         diagnostic=True,
-                        icon="mdi:fire-off",
                     )
                 )
         # `time{All,Last}Stops`: burner runtime in seconds, not a stop reason.
@@ -319,7 +343,7 @@ def _curated(dev: ExtrasDevice) -> list[Spec]:
             Spec(
                 key="dhw_hygiene_active",
                 platform="binary_sensor",
-                name="Legionellenschutz läuft",
+                name="Legionella protection running",
                 feature="heating.dhw.hygiene",
                 value_fn=_active,
                 device_class="running",
@@ -328,8 +352,8 @@ def _curated(dev: ExtrasDevice) -> list[Spec]:
 
     # --- holiday programs
     for fname, key, name in (
-        ("heating.operating.programs.holiday", "holiday", "Urlaub"),
-        ("heating.operating.programs.holidayAtHome", "holiday_at_home", "Urlaub zu Hause"),
+        ("heating.operating.programs.holiday", "holiday", "Holiday"),
+        ("heating.operating.programs.holidayAtHome", "holiday_at_home", "Holiday at home"),
     ):
         if has(fname):
             specs.append(
@@ -340,7 +364,6 @@ def _curated(dev: ExtrasDevice) -> list[Spec]:
                     feature=fname,
                     value_fn=_active,
                     attrs_fn=_holiday_attrs,
-                    icon="mdi:palm-tree",
                 )
             )
 
@@ -352,11 +375,10 @@ def _curated(dev: ExtrasDevice) -> list[Spec]:
                 Spec(
                     key=f"circuit_{m[1]}_schedule",
                     platform="binary_sensor",
-                    name=f"Zeitprogramm Heizkreis {m[1]}",
+                    name=f"Schedule circuit {m[1]}",
                     feature=fname,
                     value_fn=_active,
                     attrs_fn=_schedule_attrs,
-                    icon="mdi:calendar-week",
                 )
             )
         m = re.fullmatch(
@@ -366,46 +388,44 @@ def _curated(dev: ExtrasDevice) -> list[Spec]:
         )
         if m and has(fname):
             label = {
-                "forcedLastFromSchedule": "Zwangsbetrieb nach Zeitplan",
-                "reducedEnergySaving": "Energiesparbetrieb",
-                "summerEco": "Sommer-Eco",
+                "forcedLastFromSchedule": "Forced operation by schedule",
+                "reducedEnergySaving": "Energy saving mode",
+                "summerEco": "Summer eco",
             }[m[2]]
             specs.append(
                 Spec(
                     key=f"circuit_{m[1]}_program_{m[2]}",
                     platform="binary_sensor",
-                    name=f"{label} Heizkreis {m[1]}",
+                    name=f"{label} circuit {m[1]}",
                     feature=fname,
                     value_fn=_active,
                     attrs_fn=(lambda f: {"reason": prop(f, "reason"), "demand": prop(f, "demand")})
                     if m[2] == "reducedEnergySaving"
                     else None,
-                    icon="mdi:leaf",
                 )
             )
     for fname in sorted(feats):
         m = re.fullmatch(r"heating\.circuits\.(\d+)\.heating\.schedule", fname)
-        label = f"Heizkreis {m[1]}" if m else {
-            "heating.dhw.schedule": "Warmwasser",
-            "heating.dhw.pumps.circulation.schedule": "Zirkulation",
+        label = f"circuit {m[1]}" if m else {
+            "heating.dhw.schedule": "hot water",
+            "heating.dhw.pumps.circulation.schedule": "circulation",
         }.get(fname)
         if label and has(fname):
             specs.append(
                 Spec(
                     key=f"{_slug(fname)}_today",
                     platform="sensor",
-                    name=f"Zeitprogramm {label} heute",
+                    name=f"Schedule {label} today",
                     feature=fname,
                     value_fn=_schedule_today,
-                    icon="mdi:calendar-today",
                 )
             )
     for fname, key, name in (
-        ("heating.dhw.schedule", "dhw_schedule", "Zeitprogramm Warmwasser"),
+        ("heating.dhw.schedule", "dhw_schedule", "Schedule hot water"),
         (
             "heating.dhw.pumps.circulation.schedule",
             "circulation_schedule",
-            "Zeitprogramm Zirkulation",
+            "Schedule circulation",
         ),
     ):
         if has(fname):
@@ -417,7 +437,6 @@ def _curated(dev: ExtrasDevice) -> list[Spec]:
                     feature=fname,
                     value_fn=_active,
                     attrs_fn=_schedule_attrs,
-                    icon="mdi:calendar-week",
                 )
             )
 
@@ -427,7 +446,7 @@ def _curated(dev: ExtrasDevice) -> list[Spec]:
             Spec(
                 key="boiler_target_temperature",
                 platform="sensor",
-                name="Kessel-Solltemperatur",
+                name="Boiler target temperature",
                 feature="heating.boiler.temperature",
                 value_fn=_value("value"),
                 unit="°C",
@@ -495,7 +514,7 @@ def _generic(dev: ExtrasDevice, handled: set[str]) -> list[Spec]:
                         name=name,
                         feature=fname,
                         value_fn=(lambda f, n=pname: len(prop(f, n) or [])),
-                        attrs_fn=(lambda f, n=pname: {"value": prop(f, n)}),
+                        attrs_fn=(lambda f, n=pname: _value_attrs(prop(f, n))),
                         enabled_default=False,
                         diagnostic=True,
                     )
@@ -515,11 +534,27 @@ def _generic(dev: ExtrasDevice, handled: set[str]) -> list[Spec]:
     return specs
 
 
+def _value_attrs(value: Any) -> dict[str, Any]:
+    value, truncated = bounded(value)
+    return {"value": value, "truncated": True} if truncated else {"value": value}
+
+
 def _as_text(value: Any) -> str | None:
     if value is None:
         return None
     text = str(value)
     return text[:255]
+
+
+GAS_UNIT = "m³"
+
+
+def _gas_kwh(feature: Feature, name: str, calorific: float) -> float | None:
+    """m³ x calorific value - only when the API reports the value in m³."""
+    value = prop(feature, name)
+    if value is None or prop_unit(feature, name) != GAS_UNIT:
+        return None
+    return round(value * calorific, 2)
 
 
 def _gas_energy(dev: ExtrasDevice, calorific: float | None) -> list[Spec]:
@@ -529,38 +564,40 @@ def _gas_energy(dev: ExtrasDevice, calorific: float | None) -> list[Spec]:
     gas m³ x 10 kWh/m³ (verified on a Vitodens 200, 2025 and 2026 data), so
     an efficiency ratio would always be constant. This is the real energy
     input instead.
+
+    Only created for values the API reports in m³. Devices that already
+    report gas in kWh get nothing here: the core integration shows those, and
+    multiplying them would give values ~11x too high.
     """
     if not calorific:
         return []
     specs: list[Spec] = []
-    for circuit, label in (("heating", "Heizung"), ("dhw", "Warmwasser")):
+    for circuit, label in (("heating", "heating"), ("dhw", "hot water")):
         fname = f"heating.gas.consumption.summary.{circuit}"
-        if fname not in dev.features:
+        feature = dev.features.get(fname)
+        if feature is None or not feature.get("isEnabled", True):
             continue
         for p, plabel, total, on in (
-            ("currentDay", "heute", True, True),
-            ("currentMonth", "diesen Monat", True, True),
-            ("lastMonth", "letzten Monat", False, False),
-            ("currentYear", "dieses Jahr", True, True),
-            ("lastYear", "letztes Jahr", False, False),
+            ("currentDay", "today", True, True),
+            ("currentMonth", "this month", True, True),
+            ("lastMonth", "last month", False, False),
+            ("currentYear", "this year", True, True),
+            ("lastYear", "last year", False, False),
         ):
+            if prop_unit(feature, p) != GAS_UNIT:
+                continue
             specs.append(
                 Spec(
                     key=f"gas_energy_{circuit}_{p}",
                     platform="sensor",
-                    name=f"Gasenergie {label} {plabel}",
+                    name=f"Gas energy {label} {plabel}",
                     feature=fname,
-                    value_fn=(
-                        lambda f, p=p: None
-                        if prop(f, p) is None
-                        else round(prop(f, p) * calorific, 2)
-                    ),
+                    value_fn=(lambda f, p=p: _gas_kwh(f, p, calorific)),
                     attrs_fn=(lambda f, p=p: {"gas_m3": prop(f, p), "calorific_value": calorific}),
                     unit="kWh",
                     device_class="energy" if total else None,
                     state_class="total_increasing" if total else None,
                     enabled_default=on,
-                    icon="mdi:fire",
                 )
             )
     return specs
@@ -585,15 +622,15 @@ def _translated(spec: Spec) -> Spec:
 
 
 def build_specs(
-    dev: ExtrasDevice, calorific: float | None = None, core_keys: CoreKeys = frozenset()
+    dev: ExtrasDevice, calorific: float | None = None, overlap: Overlap = NO_OVERLAP
 ) -> list[Spec]:
     """Return all entity specs for one device.
 
-    Entities the installed core integration already provides (core_keys, see
-    core_overlap.py) are left out, and their features are kept out of the
+    Entities the core integration already provides for this device (overlap,
+    see core_overlap.py) are left out, and their features are kept out of the
     generic diagnostics too.
     """
-    skip, core_features = taken_over(core_keys)
+    skip, core_features = overlap
     curated = [
         _translated(s)
         for s in _curated(dev) + _gas_energy(dev, calorific)

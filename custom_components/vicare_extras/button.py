@@ -1,16 +1,25 @@
-"""Button platform for ViCare Extras."""
+"""Button platform for ViCare Extras (DHW hygiene)."""
 
 from __future__ import annotations
 
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .hygiene import F_HYGIENE, HygieneStartButton, hygiene_devices
+from .coordinator import ViCareExtrasConfigEntry
+from .entity import async_add_dynamic_entities
+from .hygiene import F_HYGIENE, HygieneStartButton
+
+# Writes go to the cloud API one at a time.
+PARALLEL_UPDATES = 1
 
 
 async def async_setup_entry(
-    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+    hass: HomeAssistant,
+    entry: ViCareExtrasConfigEntry,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    coordinator = entry.runtime_data
-    async_add_entities(HygieneStartButton(coordinator, dev) for dev in hygiene_devices(coordinator, F_HYGIENE))
+    async_add_dynamic_entities(
+        entry,
+        async_add_entities,
+        lambda coordinator, dev: [HygieneStartButton(coordinator, dev)] if F_HYGIENE in dev.features else [],
+    )

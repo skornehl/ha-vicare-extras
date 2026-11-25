@@ -8,7 +8,7 @@
           "calorific_value": "Brennwert (kWh/m³, optional)"
         },
         "data_description": {
-          "calorific_value": "Laut Gasrechnung. Aktiviert Gasenergie-Sensoren in kWh."
+          "calorific_value": "Laut Gasrechnung. Legt Gasenergie-Sensoren in kWh für Geräte an, die Gas in m³ melden. Vor einer späteren Änderung den Hinweis in den Optionen lesen."
         }
       }
     },
@@ -17,10 +17,154 @@
       "single_instance_allowed": "ViCare Extras ist bereits eingerichtet."
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "title": "ViCare Extras",
+        "description": "Die Gasenergie-Sensoren sind fortlaufende Summen (total_increasing). Ein neuer Brennwert rechnet die ganze Summe um, daher zeigen Langzeitstatistik und Energie-Dashboard einen Sprung. Für das Energie-Dashboard besser den Gas-Sensor in m³ der ViCare-Integration mit einem Preis pro m³ verwenden.",
+        "data": {
+          "calorific_value": "Brennwert (kWh/m³)",
+          "allow_raw_commands": "Beliebige API-Befehle erlauben (execute_command)"
+        },
+        "data_description": {
+          "calorific_value": "Laut Gasrechnung. Leer lassen, um die Gasenergie-Sensoren zu entfernen.",
+          "allow_raw_commands": "Erlaubt Administratoren, mit der Aktion vicare_extras.execute_command jeden Befehl jedes Features zu senden. Die Befehle werden weiter gegen die Grenzen der API geprüft, das Zurücksetzen auf Werkseinstellungen bleibt gesperrt. Nur einschalten, wenn nötig."
+        }
+      }
+    }
+  },
   "issues": {
     "core_internals_changed": {
       "title": "ViCare Extras kann die ViCare-Integration nicht lesen",
       "description": "Der interne Aufbau der ViCare-Integration hat sich geändert (vermutlich durch ein Home-Assistant-Update), deshalb kann ViCare Extras ihre Daten nicht mehr lesen. Die ViCare-Integration selbst ist davon nicht betroffen. Bitte ViCare Extras aktualisieren. Fehler: {error}"
+    }
+  },
+  "exceptions": {
+    "not_loaded": {
+      "message": "ViCare Extras ist nicht geladen."
+    },
+    "unknown_device_id": {
+      "message": "Unbekanntes Gerät {device_id}."
+    },
+    "not_vicare_device": {
+      "message": "{device} ist kein ViCare-Gerät."
+    },
+    "no_device_with_feature": {
+      "message": "Kein ViCare-Gerät meldet {feature}."
+    },
+    "multiple_devices": {
+      "message": "{count} ViCare-Geräte unterstützen {feature}. Bitte eines per device_id auswählen."
+    },
+    "unknown_device": {
+      "message": "Unbekanntes ViCare-Gerät {device}."
+    },
+    "no_current_data": {
+      "message": "Für das ViCare-Gerät {device} gibt es keine aktuellen Daten: Die ViCare-Integration hat länger nichts abgerufen. Bitte später erneut versuchen."
+    },
+    "feature_missing": {
+      "message": "Das Gerät meldet kein Feature {feature}."
+    },
+    "feature_blocked": {
+      "message": "Befehle auf {feature} sind gesperrt."
+    },
+    "unknown_command": {
+      "message": "{feature} kennt den Befehl {command} nicht. Möglich: {commands}."
+    },
+    "not_executable": {
+      "message": "{feature}.{command} ist im aktuellen Zustand der Anlage nicht ausführbar."
+    },
+    "unknown_params": {
+      "message": "Unbekannte Parameter für {command}: {params}."
+    },
+    "missing_param": {
+      "message": "Parameter {param} fehlt für {command}."
+    },
+    "param_not_number": {
+      "message": "{name} muss eine Zahl sein, nicht {value}."
+    },
+    "param_below_min": {
+      "message": "{name} = {value} ist kleiner als das Minimum {min}."
+    },
+    "param_above_max": {
+      "message": "{name} = {value} ist größer als das Maximum {max}."
+    },
+    "param_step": {
+      "message": "{name} = {value} passt nicht zur Schrittweite {step} (ab {base})."
+    },
+    "param_not_boolean": {
+      "message": "{name} muss true oder false sein, nicht {value}."
+    },
+    "param_not_string": {
+      "message": "{name} muss Text sein, nicht {value}."
+    },
+    "param_not_allowed": {
+      "message": "{name} = {value} ist nicht erlaubt. Möglich: {options}."
+    },
+    "param_bad_format": {
+      "message": "{name} = {value} hat das falsche Format."
+    },
+    "param_bad_regex": {
+      "message": "Die Formatregel der API für {name} lässt sich nicht prüfen ({error}), deshalb wird der Befehl nicht gesendet."
+    },
+    "param_unsupported_type": {
+      "message": "Parameter {name} hat den Typ {type}, den ViCare Extras nicht prüfen kann, deshalb wird der Befehl nicht gesendet."
+    },
+    "schedule_not_dict": {
+      "message": "{name} muss ein Zeitprogramm sein (Tag mit Zeiten)."
+    },
+    "schedule_unknown_day": {
+      "message": "Unbekannter Tag {day} im Zeitprogramm."
+    },
+    "schedule_entries_not_list": {
+      "message": "{day}: Die Zeiten müssen eine Liste sein."
+    },
+    "schedule_too_many": {
+      "message": "{day}: höchstens {max} Zeiten erlaubt."
+    },
+    "schedule_bad_entry": {
+      "message": "{day}: Eintrag {entry} braucht start und end als HH:MM."
+    },
+    "schedule_start_24": {
+      "message": "{day}: Eine Zeit kann nicht um 24:00 beginnen."
+    },
+    "schedule_bad_mode": {
+      "message": "{day}: mode {mode} ist nicht erlaubt. Möglich: {modes}."
+    },
+    "schedule_raster": {
+      "message": "{day}: Zeiten müssen im {resolution}-Minuten-Raster liegen."
+    },
+    "schedule_end_before_start": {
+      "message": "{day}: Das Ende muss nach dem Beginn liegen."
+    },
+    "schedule_overlap": {
+      "message": "{day}: Die Zeiten überlappen sich."
+    },
+    "command_failed": {
+      "message": "ViCare hat {feature}.{command} abgelehnt: {error}"
+    },
+    "raw_commands_disabled": {
+      "message": "execute_command ist ausgeschaltet. Ein Administrator kann es in den Optionen von ViCare Extras erlauben."
+    },
+    "holiday_end_before_start": {
+      "message": "Das Ende liegt vor dem Beginn."
+    },
+    "unknown_schedule": {
+      "message": "Unbekanntes Zeitprogramm {schedule}."
+    },
+    "no_schedule": {
+      "message": "Das Gerät hat kein Zeitprogramm {schedule}."
+    },
+    "mode_required": {
+      "message": "Bitte mode angeben. Möglich: {modes}."
+    },
+    "hygiene_disabled": {
+      "message": "Der Legionellenschutz ist ausgeschaltet, dann meldet die Anlage keinen Startzeitpunkt. Bitte zuerst einschalten."
+    },
+    "hygiene_time_unknown": {
+      "message": "Der aktuelle Startzeitpunkt des Legionellenschutzes ist unbekannt."
+    },
+    "hygiene_multiple_weekdays": {
+      "message": "Der Legionellenschutz läuft an mehreren Wochentagen ({weekdays}). Nur die Uhrzeit zu ändern würde ihn auf täglich umstellen. Bitte zuerst täglich oder einen Wochentag wählen oder in der ViCare-App ändern."
     }
   },
   "services": {
@@ -42,7 +186,7 @@
         },
         "device_id": {
           "name": "Gerät",
-          "description": "ViCare-Gerät (optional, sonst das passende)."
+          "description": "ViCare-Gerät. Nötig, wenn mehrere Geräte die Aktion unterstützen."
         }
       }
     },
@@ -60,7 +204,7 @@
         },
         "device_id": {
           "name": "Gerät",
-          "description": "ViCare-Gerät (optional)."
+          "description": "ViCare-Gerät. Nötig, wenn mehrere Geräte die Aktion unterstützen."
         }
       }
     },
@@ -74,13 +218,13 @@
         },
         "device_id": {
           "name": "Gerät",
-          "description": "ViCare-Gerät (optional)."
+          "description": "ViCare-Gerät. Nötig, wenn mehrere Geräte die Aktion unterstützen."
         }
       }
     },
     "execute_command": {
       "name": "ViCare-Befehl ausführen",
-      "description": "Führt einen beliebigen Befehl aus, den die ViCare-API für ein Feature anbietet. Die Parameter werden vor dem Senden gegen die Grenzen der API geprüft.",
+      "description": "Führt einen beliebigen Befehl aus, den die ViCare-API für ein Feature anbietet. Die Parameter werden vor dem Senden gegen die Grenzen der API geprüft. Nur für Administratoren und nur, wenn in den Optionen der Integration erlaubt.",
       "fields": {
         "feature": {
           "name": "Feature",
@@ -96,7 +240,7 @@
         },
         "device_id": {
           "name": "Gerät",
-          "description": "ViCare-Gerät (optional)."
+          "description": "ViCare-Gerät. Nötig, wenn mehrere Geräte die Aktion unterstützen."
         }
       }
     },
@@ -106,7 +250,7 @@
       "fields": {
         "schedule": {
           "name": "Zeitprogramm",
-          "description": "heating (Heizkreis 1), heating_circuit_N, dhw (Warmwasser) oder circulation (Zirkulation)."
+          "description": "heating (niedrigster Heizkreis mit Zeitprogramm), heating_circuit_N, dhw (Warmwasser) oder circulation (Zirkulation)."
         },
         "days": {
           "name": "Tage",
@@ -118,7 +262,7 @@
         },
         "device_id": {
           "name": "Gerät",
-          "description": "ViCare-Gerät (optional)."
+          "description": "ViCare-Gerät. Nötig, wenn mehrere Geräte die Aktion unterstützen."
         }
       }
     },
@@ -140,7 +284,7 @@
         },
         "device_id": {
           "name": "Gerät",
-          "description": "ViCare-Gerät (optional)."
+          "description": "ViCare-Gerät. Nötig, wenn mehrere Geräte die Aktion unterstützen."
         }
       }
     },
@@ -158,7 +302,7 @@
         },
         "device_id": {
           "name": "Gerät",
-          "description": "ViCare-Gerät (optional)."
+          "description": "ViCare-Gerät. Nötig, wenn mehrere Geräte die Aktion unterstützen."
         }
       }
     },
@@ -172,7 +316,7 @@
         },
         "device_id": {
           "name": "Gerät",
-          "description": "ViCare-Gerät (optional)."
+          "description": "ViCare-Gerät. Nötig, wenn mehrere Geräte die Aktion unterstützen."
         }
       }
     },
@@ -186,7 +330,7 @@
         },
         "device_id": {
           "name": "Gerät",
-          "description": "ViCare-Gerät (optional)."
+          "description": "ViCare-Gerät. Nötig, wenn mehrere Geräte die Aktion unterstützen."
         }
       }
     }
@@ -200,7 +344,7 @@
     },
     "schedule": {
       "options": {
-        "heating": "Heizkreis 1",
+        "heating": "Heizung (niedrigster Heizkreis mit Zeitprogramm)",
         "dhw": "Warmwasser",
         "circulation": "Zirkulation"
       }
@@ -214,19 +358,6 @@
         "fri": "Freitag",
         "sat": "Samstag",
         "sun": "Sonntag"
-      }
-    }
-  },
-  "options": {
-    "step": {
-      "init": {
-        "title": "ViCare Extras",
-        "data": {
-          "calorific_value": "Brennwert (kWh/m³)"
-        },
-        "data_description": {
-          "calorific_value": "Laut Gasrechnung. Leer lassen, um die Gasenergie-Sensoren abzuschalten."
-        }
       }
     }
   },

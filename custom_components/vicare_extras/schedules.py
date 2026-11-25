@@ -16,33 +16,51 @@ from typing import Any
 import voluptuous as vol
 
 from homeassistant.core import HomeAssistant, ServiceCall, ServiceResponse, SupportsResponse
-from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 
-from .commands import async_execute
+from .commands import DAYS, async_execute, validation_error
 from .const import DOMAIN
 
-DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
-_TIME = re.compile(r"^([01]\d|2[0-3]):[0-5]\d$|^24:00$")
+# A slot may end at 24:00 but never start there.
+_START = re.compile(r"^([01]\d|2[0-3]):[0-5]\d$")
+_END = re.compile(r"^([01]\d|2[0-3]):[0-5]\d$|^24:00$")
+_CIRCUIT_SCHEDULE = re.compile(r"heating\.circuits\.(\d+)\.heating\.schedule")
 
 
-def schedule_feature(key: str) -> str:
-    """Map a service-level schedule key to its feature name."""
+def heating_schedules(features: dict[str, dict[str, Any]]) -> list[tuple[int, str]]:
+    """Return (circuit, feature) of all enabled heating schedules, lowest first."""
+    found = []
+    for name, feat in features.items():
+        m = _CIRCUIT_SCHEDULE.fullmatch(name)
+        if m and feat.get("isEnabled", True):
+            found.append((int(m[1]), name))
+    return sorted(found)
+
+
+def schedule_feature(key: str, features: dict[str, dict[str, Any]] | None = None) -> str | None:
+    """Map a service-level schedule key to its feature name.
+
+    `heating` without a circuit means the lowest circuit with an enabled
+    schedule on that device (None if it has none).
+    """
     if key == "dhw":
         return "heating.dhw.schedule"
     if key == "circulation":
         return "heating.dhw.pumps.circulation.schedule"
-    m = re.fullmatch(r"heating(?:_circuit_(\d+))?", key)
+    if key == "heating":
+        found = heating_schedules(features or {})
+        return found[0][1] if found else None
+    m = re.fullmatch(r"heating_circuit_(\d+)", key)
     if m:
-        return f"heating.circuits.{m[1] or 1}.heating.schedule"
-    raise ServiceValidationError(f"Unbekanntes Zeitprogramm '{key}'")
+        return f"heating.circuits.{int(m[1])}.heating.schedule"
+    raise validation_error("unknown_schedule", schedule=key)
 
 
 SCHEDULE_KEY = vol.All(cv.string, vol.Match(r"^(dhw|circulation|heating(_circuit_\d+)?)$"))
 ENTRY = vol.Schema(
     {
-        vol.Required("start"): vol.Match(_TIME),
-        vol.Required("end"): vol.Match(_TIME),
+        vol.Required("start"): vol.Match(_START),
+        vol.Required("end"): vol.Match(_END),
         vol.Optional("mode"): cv.string,
     }
 )
@@ -97,9 +115,7 @@ def _normalize(day_entries: list[dict[str, Any]], constraints: dict[str, Any]) -
             elif "normal" in modes:
                 mode = "normal"
             else:
-                raise ServiceValidationError(
-                    f"Bitte 'mode' angeben, möglich: {', '.join(modes)}"
-                )
+                raise validation_error("mode_required", modes=", ".join(modes))
         out.append({"start": e["start"], "end": e["end"], "mode": mode})
     for i, e in enumerate(out):
         e["position"] = i
@@ -123,15 +139,23 @@ def format_day(entries: list[dict[str, Any]]) -> str:
 
 
 def async_register_schedule_services(hass: HomeAssistant, helpers: Any) -> None:
-    """Register schedule services. `helpers` provides _coordinator/_identifier."""
+    """Register schedule services. `helpers` provides coordinator/resolve_device."""
 
     def _resolve(call: ServiceCall) -> tuple[Any, str, str, dict[str, Any]]:
-        feature = schedule_feature(call.data["schedule"])
-        coordinator = helpers._coordinator(hass)  # noqa: SLF001
-        ident = helpers._identifier(hass, coordinator, feature, call.data.get("device_id"))  # noqa: SLF001
-        fdata = coordinator.data[ident].features.get(feature)
-        if fdata is None:
-            raise ServiceValidationError(f"Das Gerät meldet kein Zeitprogramm '{feature}'")
+        key = call.data["schedule"]
+        coordinator = helpers.coordinator(hass)
+
+        def supports(features: dict[str, dict[str, Any]]) -> bool:
+            feature = schedule_feature(key, features)
+            return feature is not None and feature in features
+
+        label = schedule_feature(key) or "heating.circuits.N.heating.schedule"
+        ident = helpers.resolve_device(hass, coordinator, supports, label, call.data.get("device_id"))
+        features = coordinator.data[ident].features
+        feature = schedule_feature(key, features)
+        fdata = features.get(feature) if feature else None
+        if feature is None or fdata is None:
+            raise validation_error("no_schedule", schedule=key)
         return coordinator, ident, feature, fdata
 
     async def _send_week(coordinator, ident, feature, week) -> None:
@@ -179,6 +203,7 @@ def async_register_schedule_services(hass: HomeAssistant, helpers: Any) -> None:
             "summary": {d: format_day(week[d]) for d in DAYS},
         }
 
+    # Normal user actions, like the entities; only execute_command is admin-only.
     hass.services.async_register(DOMAIN, "set_schedule_day", set_schedule_day, SCHEMA_SET_DAY)
     hass.services.async_register(DOMAIN, "copy_schedule_day", copy_schedule_day, SCHEMA_COPY_DAY)
     hass.services.async_register(DOMAIN, "reset_schedule_day", reset_schedule_day, SCHEMA_RESET_DAY)

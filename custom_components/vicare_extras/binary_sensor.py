@@ -2,35 +2,44 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
+
 from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
     BinarySensorEntity,
 )
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .coordinator import ViCareExtrasCoordinator
-from .descriptions import build_specs
-from .entity import ViCareExtrasEntity
+from .coordinator import ExtrasDevice, ViCareExtrasConfigEntry, ViCareExtrasCoordinator
+from .descriptions import Spec
+from .entity import ViCareExtrasEntity, async_add_dynamic_entities, device_specs
+
+# Read-only: values come from the coordinator.
+PARALLEL_UPDATES = 0
+
+
+def _entities(coordinator: ViCareExtrasCoordinator, dev: ExtrasDevice) -> Iterable[Entity]:
+    for spec in device_specs(coordinator, dev):
+        if spec.platform == "binary_sensor":
+            yield ViCareExtrasBinarySensor(coordinator, dev, spec)
 
 
 async def async_setup_entry(
-    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+    hass: HomeAssistant,
+    entry: ViCareExtrasConfigEntry,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    coordinator: ViCareExtrasCoordinator = entry.runtime_data
-    async_add_entities(
-        ViCareExtrasBinarySensor(coordinator, dev, spec)
-        for dev in coordinator.data.values()
-        for spec in build_specs(dev, core_keys=coordinator.core_keys)
-        if spec.platform == "binary_sensor"
-    )
+    async_add_dynamic_entities(entry, async_add_entities, _entities)
 
 
 class ViCareExtrasBinarySensor(ViCareExtrasEntity, BinarySensorEntity):
     """A binary sensor for one boolean feature property."""
 
-    def __init__(self, coordinator, device, spec) -> None:
+    def __init__(
+        self, coordinator: ViCareExtrasCoordinator, device: ExtrasDevice, spec: Spec
+    ) -> None:
         super().__init__(coordinator, device, spec)
         if spec.device_class:
             self._attr_device_class = BinarySensorDeviceClass(spec.device_class)
