@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from datetime import datetime
 from typing import Any
 
@@ -10,39 +11,45 @@ from homeassistant.components.sensor import (
     SensorEntity,
     SensorStateClass,
 )
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .const import CONF_CALORIFIC_VALUE
-from .coordinator import ExtrasDevice, ViCareExtrasCoordinator
-from .descriptions import build_specs
-from .entity import ViCareExtrasEntity, device_info
+from .coordinator import ExtrasDevice, ViCareExtrasConfigEntry, ViCareExtrasCoordinator
+from .descriptions import Spec
+from .entity import (
+    ViCareExtrasBaseEntity,
+    ViCareExtrasEntity,
+    async_add_dynamic_entities,
+    device_specs,
+)
+
+# Read-only: values come from the coordinator.
+PARALLEL_UPDATES = 0
+
+
+def _entities(coordinator: ViCareExtrasCoordinator, dev: ExtrasDevice) -> Iterable[Entity]:
+    for spec in device_specs(coordinator, dev):
+        if spec.platform == "sensor":
+            yield ViCareExtrasSensor(coordinator, dev, spec)
+    yield ViCareExtrasApiDataSensor(coordinator, dev)
 
 
 async def async_setup_entry(
-    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+    hass: HomeAssistant,
+    entry: ViCareExtrasConfigEntry,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    coordinator: ViCareExtrasCoordinator = entry.runtime_data
-    calorific = entry.options.get(CONF_CALORIFIC_VALUE)
-    async_add_entities(
-        ViCareExtrasSensor(coordinator, dev, spec)
-        for dev in coordinator.data.values()
-        for spec in build_specs(dev, calorific, coordinator.core_keys)
-        if spec.platform == "sensor"
-    )
-    async_add_entities(
-        ViCareExtrasApiDataSensor(coordinator, dev)
-        for dev in coordinator.data.values()
-    )
+    async_add_dynamic_entities(entry, async_add_entities, _entities)
 
 
 class ViCareExtrasSensor(ViCareExtrasEntity, SensorEntity):
     """A sensor for one feature property."""
 
-    def __init__(self, coordinator, device, spec) -> None:
+    def __init__(
+        self, coordinator: ViCareExtrasCoordinator, device: ExtrasDevice, spec: Spec
+    ) -> None:
         super().__init__(coordinator, device, spec)
         self._attr_native_unit_of_measurement = spec.unit
         if spec.device_class:
@@ -58,27 +65,20 @@ class ViCareExtrasSensor(ViCareExtrasEntity, SensorEntity):
         return value
 
 
-class ViCareExtrasApiDataSensor(
-    CoordinatorEntity[ViCareExtrasCoordinator], SensorEntity
-):
+class ViCareExtrasApiDataSensor(ViCareExtrasBaseEntity, SensorEntity):
     """When the core integration last fetched this device's data from the API.
 
     Replaces the former per-entity attribute api_data_from: one entity that
-    changes per poll instead of every entity of the device.
+    changes per poll instead of every entity of the device. Stays available
+    while the data is stale, so it shows since when nothing arrived.
     """
 
-    _attr_has_entity_name = True
     _attr_translation_key = "api_data_from"
     _attr_device_class = SensorDeviceClass.TIMESTAMP
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
-    def __init__(
-        self, coordinator: ViCareExtrasCoordinator, device: ExtrasDevice
-    ) -> None:
-        super().__init__(coordinator)
-        self._identifier = device.identifier
-        self._attr_unique_id = f"{device.identifier}-extras-api_data_from"
-        self._attr_device_info = device_info(device)
+    def __init__(self, coordinator: ViCareExtrasCoordinator, device: ExtrasDevice) -> None:
+        super().__init__(coordinator, device, "api_data_from")
 
     @property
     def _cache_time(self) -> datetime | None:
