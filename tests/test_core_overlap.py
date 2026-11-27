@@ -255,6 +255,13 @@ TAKEOVER_FEATURES = {
     "heating.circuits.1.temperature": {
         "properties": {"value": {"type": "number", "value": 35, "unit": "celsius"}}
     },
+    "device.timeseries.burner.stops": {
+        "properties": {
+            f"{reason}{window}": {"type": "number", "value": 2}
+            for reason in (*co.CORE_BURNER_STOP_REASONS, "time")
+            for window in ("AllStops", "LastStops")
+        }
+    },
 }
 
 CORE_WITH_EVERYTHING = frozenset(
@@ -288,6 +295,9 @@ async def test_a_new_core_takes_over_everything_it_created() -> None:
         assert not keys & generic, feat
     # The pump's current output has no core entity in this core: it stays generic.
     assert "x_heating_boiler_pumps_internal_current_value" in keys
+    # The core has the total of each stop reason; the last stops and the runtime stay.
+    assert not any(key.startswith("burner_stops_") and key.endswith("_allstops") and "time" not in key for key in keys)
+    assert {"burner_stops_normalStop_laststops", "burner_stops_time_allstops", "burner_stops_time_laststops"} <= keys
 
 
 async def test_circuits_are_taken_over_one_by_one() -> None:
@@ -325,6 +335,34 @@ async def test_device_overlap_takes_over_the_circuits_in_the_registry(monkeypatc
     assert features == {"heating.circuits.1.temperature"}
 
 
+async def test_burner_stop_keys_name_the_core_keys() -> None:
+    assert co.CORE_TAKEOVER["burner_stops_normalStop_allstops"] == ("sensor", "burner_stops_normal_stop", ())
+    assert co.CORE_TAKEOVER["burner_stops_temperatureMonitorIonizationComparison_allstops"][1] == (
+        "burner_stops_temperature_monitor_ionization_comparison"
+    )
+
+
+def _disabled(entity_id, platform, unique_id):
+    entry = _entry(entity_id, platform, unique_id)
+    entry.disabled_by = "integration"
+    return entry
+
+
+async def test_a_disabled_core_entity_leaves_the_extras_entity() -> None:
+    """Many core diagnostics are disabled by default: Extras keeps its value until one is enabled."""
+    registry = _Registry(
+        [
+            _disabled("sensor.stops", "vicare", "gw_dev-burner_stops_normal_stop"),
+            _disabled("sensor.c0", "vicare", "gw_dev-target_supply_temperature-0"),
+            _entry("sensor.c1", "vicare", "gw_dev-target_supply_temperature-1"),
+        ]
+    )
+    assert not co.core_entity_exists(registry, "gw_dev", "sensor", "burner_stops_normal_stop")
+    assert co.core_components(registry, "gw_dev", "sensor", "target_supply_temperature") == {"1"}
+    registry.entities["sensor.stops"].disabled_by = None
+    assert co.core_entity_exists(registry, "gw_dev", "sensor", "burner_stops_normal_stop")
+
+
 async def test_the_readme_links_every_takeover_to_its_core_pull_request() -> None:
     """README, "Values that moved into the core integration": one row per Extras key."""
     from pathlib import Path
@@ -333,4 +371,6 @@ async def test_the_readme_links_every_takeover_to_its_core_pull_request() -> Non
     rows = [line for line in readme.splitlines() if line.startswith("| ") and "home-assistant/core/pull/" in line]
     for key in [*co.CORE_TAKEOVER, *co.CORE_TAKEOVER_CIRCUITS]:
         shown = key.replace("{circuit}", "N")
+        if key.startswith("burner_stops_") and key.endswith("_allstops"):
+            shown = "burner_stops_<reason>_allstops"
         assert any(f"`{shown}`" in row for row in rows), f"README has no row with a core PR link for {key}"

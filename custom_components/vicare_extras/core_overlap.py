@@ -6,8 +6,12 @@ HA 2026.12). An Extras entity is only left out when both hold:
 
 1. the loaded `vicare` integration (core or a custom copy) defines the entity
    description key (read from its platform modules), and
-2. the core integration really created that entity for the device, that is
-   the entity registry has a `vicare` entity with the core unique_id on it.
+2. the core integration really created that entity for the device and it is
+   enabled, that is the entity registry has a `vicare` entity with the core
+   unique_id on it that is not disabled. A core entity that is disabled (many
+   diagnostic ones are by default) leaves the Extras entity in place: better
+   a duplicate than a missing value. Once it is enabled, the next start of
+   Extras leaves its own out.
 
 Then the curated Extras entity is not created and its feature is not offered
 as a generic diagnostic either, so nothing shows up twice. With an older core,
@@ -31,6 +35,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable
 import logging
+import re
 from types import ModuleType
 
 from homeassistant.core import HomeAssistant
@@ -95,6 +100,37 @@ CORE_TAKEOVER: dict[str, tuple[str, str, tuple[str, ...]]] = {
         ("device.lock.external",),
     ),
 }
+
+# home-assistant/core#195089 (open): the total of each heating stop reason, one
+# core sensor per reason, `burner_stops_<reason in snake case>`. The Extras
+# window of the last stops and the burner runtime stay, and so do the stops
+# during hot water heating. The feature stays with Extras for them.
+CORE_BURNER_STOP_REASONS = (
+    "normalStop",
+    "flameLossDuringOperation",
+    "flueGasTemperatureSensor",
+    "ionizationAlignment",
+    "noGasAtStart",
+    "noIgnitionAtStart",
+    "noIonizationAtStart",
+    "safetyShutdown",
+    "safetyShutdownErrorShutdown",
+    "safetyTime",
+    "stabilisationProcess",
+    "temperatureMonitor",
+    "temperatureMonitorIonizationComparison",
+    "undervoltage",
+)
+CORE_TAKEOVER.update(
+    {
+        f"burner_stops_{reason}_allstops": (
+            "sensor",
+            "burner_stops_" + re.sub(r"(?<!^)(?=[A-Z])", "_", reason).lower(),
+            (),
+        )
+        for reason in CORE_BURNER_STOP_REASONS
+    }
+)
 
 # Per heating circuit: Extras key and features with "{circuit}" -> (core
 # platform, core description key). The core creates one entity per circuit.
@@ -195,40 +231,45 @@ def taken_over(
     return frozenset(skip), frozenset(features)
 
 
+def _enabled_core_entries(
+    registry: er.EntityRegistry, platform: str, unique_id: str
+) -> Iterable[er.RegistryEntry]:
+    """Yield the enabled core entities whose unique ID is `unique_id` or starts with it and "-"."""
+    prefix = f"{unique_id}-"
+    for entry in registry.entities.values():
+        if (
+            entry.platform == VICARE_DOMAIN
+            and entry.domain == platform
+            and getattr(entry, "disabled_by", None) is None
+            and (entry.unique_id == unique_id or entry.unique_id.startswith(prefix))
+        ):
+            yield entry
+
+
 def core_entity_exists(
     registry: er.EntityRegistry, identifier: str, platform: str, key: str
 ) -> bool:
-    """Return True if the core vicare integration registered `key` for the device.
+    """Return True if the core vicare integration has `key` enabled for the device.
 
     Core unique IDs are `<identifier>-<key>` for device-level values and
     `<identifier>-<key>-<component id>` for circuits, burners, ...
+    A disabled core entity does not count.
     """
-    unique_id = f"{identifier}-{key}"
-    if registry.async_get_entity_id(platform, VICARE_DOMAIN, unique_id):
-        return True
-    prefix = f"{unique_id}-"
-    return any(
-        entry.platform == VICARE_DOMAIN
-        and entry.domain == platform
-        and entry.unique_id.startswith(prefix)
-        for entry in registry.entities.values()
-    )
+    return any(_enabled_core_entries(registry, platform, f"{identifier}-{key}"))
 
 
 def core_components(
     registry: er.EntityRegistry, identifier: str, platform: str, key: str
 ) -> set[str]:
-    """Return the component IDs (circuits, burners, ...) the core registered `key` for.
+    """Return the component IDs (circuits, burners, ...) the core has `key` enabled for.
 
     The core unique ID of such an entity is `<identifier>-<key>-<component id>`.
     """
     prefix = f"{identifier}-{key}-"
     return {
         entry.unique_id.removeprefix(prefix)
-        for entry in registry.entities.values()
-        if entry.platform == VICARE_DOMAIN
-        and entry.domain == platform
-        and entry.unique_id.startswith(prefix)
+        for entry in _enabled_core_entries(registry, platform, f"{identifier}-{key}")
+        if entry.unique_id.startswith(prefix)
     }
 
 
