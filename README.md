@@ -144,11 +144,30 @@ diagnostic either, and an old Extras entity of it is removed from the entity
 registry. With an older Home Assistant, or a device the core does not create
 the value for, everything stays as before.
 
-| Extras entity | Core entity (since) |
-|---|---|
-| Internal boiler pump (`boiler_pump_internal`) | Internal pump, binary sensor (HA 2026.12, core #193054) |
-| Boiler pump target output (`boiler_pump_internal_target`) | Internal pump target modulation (HA 2026.12) |
-| generic `heating.boiler.pumps.internal.current` | Internal pump modulation (HA 2026.12) |
+| Extras entity | Core entity | Core pull request | In Home Assistant |
+|---|---|---|---|
+| Internal boiler pump (`boiler_pump_internal`) | Internal pump (binary sensor) | [#193054](https://github.com/home-assistant/core/pull/193054) | 2026.12 |
+| Boiler pump target output (`boiler_pump_internal_target`) | Internal pump target modulation | [#193054](https://github.com/home-assistant/core/pull/193054) | 2026.12 |
+| generic `heating.boiler.pumps.internal.current` | Internal pump modulation | [#193054](https://github.com/home-assistant/core/pull/193054) | 2026.12 |
+| Holiday (`holiday`) | Holiday (binary sensor), with Holiday start and end sensors | [#189621](https://github.com/home-assistant/core/pull/189621) | 2026.12 |
+| Holiday at home (`holiday_at_home`) | Holiday at home (binary sensor), with its start and end sensors | [#189621](https://github.com/home-assistant/core/pull/189621) | 2026.12 |
+| Legionella protection running (`dhw_hygiene_active`) | DHW legionella protection | [#194939](https://github.com/home-assistant/core/pull/194939) | 2027.1 |
+| Boiler target temperature (`boiler_target_temperature`) | Boiler target temperature | [#194940](https://github.com/home-assistant/core/pull/194940) | 2027.1 |
+| Malfunction (`malfunction`) | Malfunction lock | [#194930](https://github.com/home-assistant/core/pull/194930) | not merged yet |
+| External lock device (`device_external_lock`) | External lock | [#194930](https://github.com/home-assistant/core/pull/194930) | not merged yet |
+| Target supply temperature circuit N (`circuit_N_target_supply_temperature`) | Target supply temperature, per heating circuit | [#192754](https://github.com/home-assistant/core/pull/192754) | not merged yet |
+
+A row whose pull request is not merged yet changes nothing until a Home
+Assistant release has the core entity. Each heating circuit is checked on its
+own: a circuit the core has no entity for keeps its Extras entity.
+
+Some values stay in Extras next to a core entity, because the core shows less:
+
+- **Service messages:** core [#194930](https://github.com/home-assistant/core/pull/194930)
+  adds a "Service message" binary sensor that only says whether there is one.
+  The Extras sensor keeps the count and the entries.
+- **Legionella protection:** the core shows only whether it runs. Switching it
+  on or off, its temperature and its start stay writable entities of Extras.
 
 Automations that use the Extras entity IDs have to be switched to the core
 entities after the update.

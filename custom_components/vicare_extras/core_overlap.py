@@ -13,9 +13,18 @@ Then the curated Extras entity is not created and its feature is not offered
 as a generic diagnostic either, so nothing shows up twice. With an older core,
 or a device the core does not support the value for, everything stays.
 
+A value of a heating circuit (CORE_TAKEOVER_CIRCUITS) is checked per circuit:
+the core names its entity `<device>-<key>-<circuit>`, and only the circuits
+it created are left out of Extras.
+
 Limitation: description keys are collected from all description tuples of a
 platform module, not per description group (device, circuit, burner, ...).
 That is harmless because of check 2: the registry decides per device.
+
+Every entry names the core pull request that adds the value; the README lists
+them in "Values that moved into the core integration". An entry for a pull
+request that is not merged yet changes nothing until a Home Assistant release
+has the description key and creates the entity.
 """
 
 from __future__ import annotations
@@ -37,6 +46,7 @@ CORE_PLATFORMS = ("sensor", "binary_sensor")
 # Curated Extras key -> (core platform, core description key, features the
 # core now reads). The features are also kept out of the generic layer.
 CORE_TAKEOVER: dict[str, tuple[str, str, tuple[str, ...]]] = {
+    # home-assistant/core#193054 (merged, HA 2026.12)
     "boiler_pump_internal": (
         "binary_sensor",
         "boiler_internal_pump_active",
@@ -46,6 +56,54 @@ CORE_TAKEOVER: dict[str, tuple[str, str, tuple[str, ...]]] = {
         "sensor",
         "boiler_internal_pump_target_modulation",
         ("heating.boiler.pumps.internal.target",),
+    ),
+    # home-assistant/core#189621 (merged, HA 2026.12): the start and end are
+    # sensors of their own in the core.
+    "holiday": (
+        "binary_sensor",
+        "holiday_active",
+        ("heating.operating.programs.holiday",),
+    ),
+    "holiday_at_home": (
+        "binary_sensor",
+        "holiday_at_home_active",
+        ("heating.operating.programs.holidayAtHome",),
+    ),
+    # home-assistant/core#194939 (merged, HA 2027.1). Switching it, its
+    # temperature and its start stay writable entities of Extras (hygiene.py).
+    "dhw_hygiene_active": (
+        "binary_sensor",
+        "dhw_hygiene_active",
+        ("heating.dhw.hygiene",),
+    ),
+    # home-assistant/core#194940 (merged, HA 2027.1)
+    "boiler_target_temperature": (
+        "sensor",
+        "boiler_target_temperature",
+        ("heating.boiler.temperature",),
+    ),
+    # home-assistant/core#194930 (open). Its service message binary sensor only
+    # says whether there is one, so the Extras count with the entries stays.
+    "malfunction": (
+        "binary_sensor",
+        "malfunction_lock_active",
+        ("device.lock.malfunction",),
+    ),
+    "device_external_lock": (
+        "binary_sensor",
+        "external_lock_active",
+        ("device.lock.external",),
+    ),
+}
+
+# Per heating circuit: Extras key and features with "{circuit}" -> (core
+# platform, core description key). The core creates one entity per circuit.
+CORE_TAKEOVER_CIRCUITS: dict[str, tuple[str, str, tuple[str, ...]]] = {
+    # home-assistant/core#192754 (open)
+    "circuit_{circuit}_target_supply_temperature": (
+        "sensor",
+        "target_supply_temperature",
+        ("heating.circuits.{circuit}.temperature",),
     ),
 }
 
@@ -103,12 +161,17 @@ async def async_core_keys(hass: HomeAssistant) -> CoreKeys:
 
 
 def taken_over(
-    core_keys: CoreKeys, created: Callable[[str, str], bool] | None = None
+    core_keys: CoreKeys,
+    created: Callable[[str, str], bool] | None = None,
+    circuits: Callable[[str, str], Iterable[str]] | None = None,
 ) -> Overlap:
     """Return (curated Extras keys to skip, features the core now covers).
 
     `created(platform, key)` tells whether the core created that entity for
     the device; None means "assume it did" (only the description keys count).
+    `circuits(platform, key)` gives the heating circuits the core created an
+    entity of `key` for; None means none (without the registry a circuit is
+    never left out).
     """
 
     def provided(platform: str, key: str) -> bool:
@@ -123,6 +186,12 @@ def taken_over(
     for (platform, core_key), feats in CORE_TAKEOVER_GENERIC.items():
         if provided(platform, core_key):
             features.update(feats)
+    for extras_key, (platform, core_key, feats) in CORE_TAKEOVER_CIRCUITS.items():
+        if (platform, core_key) not in core_keys or circuits is None:
+            continue
+        for circuit in circuits(platform, core_key):
+            skip.add(extras_key.format(circuit=circuit))
+            features.update(feat.format(circuit=circuit) for feat in feats)
     return frozenset(skip), frozenset(features)
 
 
@@ -146,6 +215,23 @@ def core_entity_exists(
     )
 
 
+def core_components(
+    registry: er.EntityRegistry, identifier: str, platform: str, key: str
+) -> set[str]:
+    """Return the component IDs (circuits, burners, ...) the core registered `key` for.
+
+    The core unique ID of such an entity is `<identifier>-<key>-<component id>`.
+    """
+    prefix = f"{identifier}-{key}-"
+    return {
+        entry.unique_id.removeprefix(prefix)
+        for entry in registry.entities.values()
+        if entry.platform == VICARE_DOMAIN
+        and entry.domain == platform
+        and entry.unique_id.startswith(prefix)
+    }
+
+
 def device_overlap(hass: HomeAssistant, core_keys: CoreKeys, identifier: str) -> Overlap:
     """Return the overlap for one device, checked against the entity registry."""
     if not core_keys:
@@ -154,6 +240,7 @@ def device_overlap(hass: HomeAssistant, core_keys: CoreKeys, identifier: str) ->
     return taken_over(
         core_keys,
         lambda platform, key: core_entity_exists(registry, identifier, platform, key),
+        lambda platform, key: core_components(registry, identifier, platform, key),
     )
 
 
