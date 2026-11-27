@@ -138,7 +138,8 @@ always be the same constant.
 Some values started here and were later added to the core ViCare integration.
 At startup ViCare Extras checks, per device, whether the loaded `vicare`
 integration (the built-in one or a custom copy) defines the value **and** has
-actually created the entity for that device (entity registry). Only then the
+actually created the entity for that device and it is enabled (entity
+registry). Only then the
 Extras entity is not created, its feature is not offered as a generic
 diagnostic either, and an old Extras entity of it is removed from the entity
 registry. With an older Home Assistant, or a device the core does not create
@@ -156,10 +157,16 @@ the value for, everything stays as before.
 | Malfunction (`malfunction`) | Malfunction lock | [#194930](https://github.com/home-assistant/core/pull/194930) | not merged yet |
 | External lock device (`device_external_lock`) | External lock | [#194930](https://github.com/home-assistant/core/pull/194930) | not merged yet |
 | Target supply temperature circuit N (`circuit_N_target_supply_temperature`) | Target supply temperature, per heating circuit | [#192754](https://github.com/home-assistant/core/pull/192754) | not merged yet |
+| Burner stops by reason, total (`burner_stops_<reason>_allstops`) | One burner stop sensor per reason, such as Normal burner stops | [#195089](https://github.com/home-assistant/core/pull/195089) | not merged yet |
 
 A row whose pull request is not merged yet changes nothing until a Home
 Assistant release has the core entity. Each heating circuit is checked on its
 own: a circuit the core has no entity for keeps its Extras entity.
+
+A core entity that is disabled does not count. The core creates its burner stop
+sensors disabled, so the Extras counters stay until you enable the core ones;
+after the next start of Home Assistant, Extras leaves out each counter whose
+core sensor is enabled.
 
 Some values stay in Extras next to a core entity, because the core shows less:
 
@@ -168,6 +175,9 @@ Some values stay in Extras next to a core entity, because the core shows less:
   The Extras sensor keeps the count and the entries.
 - **Legionella protection:** the core shows only whether it runs. Switching it
   on or off, its temperature and its start stay writable entities of Extras.
+- **Burner stops:** the core counts the total of each reason in heating. The
+  last stops, the burner runtime and the stops during hot water heating stay
+  in Extras.
 
 Automations that use the Extras entity IDs have to be switched to the core
 entities after the update.
