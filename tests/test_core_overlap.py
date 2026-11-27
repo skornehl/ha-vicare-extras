@@ -218,3 +218,119 @@ async def test_remove_orphaned_entities(monkeypatch) -> None:
 
 async def test_unique_ids() -> None:
     assert co.unique_ids("dev", ["a", "b"]) == {"dev-extras-a", "dev-extras-b"}
+
+
+# The values of the core pull requests in CORE_TAKEOVER and CORE_TAKEOVER_CIRCUITS,
+# as a gas boiler with two heating circuits reports them.
+TAKEOVER_FEATURES = {
+    **PUMP_FEATURES,
+    "heating.operating.programs.holiday": {
+        "properties": {
+            "active": {"type": "boolean", "value": False},
+            "start": {"type": "string", "value": ""},
+            "end": {"type": "string", "value": ""},
+        }
+    },
+    "heating.operating.programs.holidayAtHome": {
+        "properties": {
+            "active": {"type": "boolean", "value": False},
+            "start": {"type": "string", "value": ""},
+            "end": {"type": "string", "value": ""},
+        }
+    },
+    "heating.dhw.hygiene": {
+        "properties": {
+            "enabled": {"type": "boolean", "value": True},
+            "active": {"type": "boolean", "value": False},
+        }
+    },
+    "heating.boiler.temperature": {
+        "properties": {"value": {"type": "number", "value": 54, "unit": "celsius"}}
+    },
+    "device.lock.malfunction": {"properties": {"active": {"type": "boolean", "value": False}}},
+    "device.lock.external": {"properties": {"active": {"type": "boolean", "value": False}}},
+    "heating.circuits.0.temperature": {
+        "properties": {"value": {"type": "number", "value": 42, "unit": "celsius"}}
+    },
+    "heating.circuits.1.temperature": {
+        "properties": {"value": {"type": "number", "value": 35, "unit": "celsius"}}
+    },
+}
+
+CORE_WITH_EVERYTHING = frozenset(
+    {(platform, key) for platform, key, _ in co.CORE_TAKEOVER.values()}
+    | {(platform, key) for platform, key, _ in co.CORE_TAKEOVER_CIRCUITS.values()}
+)
+
+
+def _takeover_keys(core_keys, created=None, circuits=None) -> set[str]:
+    dev = ExtrasDevice("gateway_device", "E3_Vitodens_200", dict(TAKEOVER_FEATURES))
+    return {spec.key for spec in build_specs(dev, None, co.taken_over(core_keys, created, circuits))}
+
+
+async def test_every_takeover_names_a_curated_entity() -> None:
+    """A key in the mapping that Extras does not create would never skip anything."""
+    keys = _takeover_keys(frozenset())
+    assert set(co.CORE_TAKEOVER) <= keys
+    for template in co.CORE_TAKEOVER_CIRCUITS:
+        assert {template.format(circuit=c) for c in ("0", "1")} <= keys
+
+
+async def test_a_new_core_takes_over_everything_it_created() -> None:
+    keys = _takeover_keys(CORE_WITH_EVERYTHING, circuits=lambda platform, key: {"0", "1"})
+    assert not keys & set(co.CORE_TAKEOVER)
+    assert not any(key.endswith("_target_supply_temperature") for key in keys)
+    # The features do not come back as generic diagnostics, one per property.
+    feats = [f for _, _, fs in co.CORE_TAKEOVER.values() for f in fs]
+    feats += [f.format(circuit=c) for _, _, fs in co.CORE_TAKEOVER_CIRCUITS.values() for f in fs for c in ("0", "1")]
+    for feat in feats:
+        generic = {f"x_{feat.replace('.', '_')}_{name}" for name in TAKEOVER_FEATURES[feat]["properties"]}
+        assert not keys & generic, feat
+    # The pump's current output has no core entity in this core: it stays generic.
+    assert "x_heating_boiler_pumps_internal_current_value" in keys
+
+
+async def test_circuits_are_taken_over_one_by_one() -> None:
+    """The core created circuit 0 only: circuit 1 keeps its Extras entity."""
+    core_keys = frozenset({("sensor", "target_supply_temperature")})
+    skip, features = co.taken_over(core_keys, None, lambda platform, key: {"0"})
+    assert skip == {"circuit_0_target_supply_temperature"}
+    assert features == {"heating.circuits.0.temperature"}
+    keys = _takeover_keys(core_keys, circuits=lambda platform, key: {"0"})
+    assert "circuit_0_target_supply_temperature" not in keys
+    assert "circuit_1_target_supply_temperature" in keys
+    # Without the registry no circuit is left out.
+    assert co.taken_over(core_keys) == (frozenset(), frozenset())
+
+
+async def test_core_components() -> None:
+    registry = _Registry(
+        [
+            _entry("sensor.c0", "vicare", "gw_dev-target_supply_temperature-0"),
+            _entry("sensor.c1", "vicare", "gw_dev-target_supply_temperature-1"),
+            _entry("sensor.other", "vicare", "gw_other-target_supply_temperature-0"),
+            _entry("sensor.extras", "vicare_extras", "gw_dev-target_supply_temperature-2"),
+            _entry("sensor.device", "vicare", "gw_dev-target_supply_temperature"),
+        ]
+    )
+    assert co.core_components(registry, "gw_dev", "sensor", "target_supply_temperature") == {"0", "1"}
+    assert co.core_components(registry, "gw_dev", "binary_sensor", "target_supply_temperature") == set()
+
+
+async def test_device_overlap_takes_over_the_circuits_in_the_registry(monkeypatch) -> None:
+    registry = _Registry([_entry("sensor.c1", "vicare", "gw_dev-target_supply_temperature-1")])
+    monkeypatch.setattr(co.er, "async_get", lambda hass: registry)
+    skip, features = co.device_overlap(None, frozenset({("sensor", "target_supply_temperature")}), "gw_dev")
+    assert skip == {"circuit_1_target_supply_temperature"}
+    assert features == {"heating.circuits.1.temperature"}
+
+
+async def test_the_readme_links_every_takeover_to_its_core_pull_request() -> None:
+    """README, "Values that moved into the core integration": one row per Extras key."""
+    from pathlib import Path
+
+    readme = (Path(__file__).parents[1] / "README.md").read_text(encoding="utf-8")
+    rows = [line for line in readme.splitlines() if line.startswith("| ") and "home-assistant/core/pull/" in line]
+    for key in [*co.CORE_TAKEOVER, *co.CORE_TAKEOVER_CIRCUITS]:
+        shown = key.replace("{circuit}", "N")
+        assert any(f"`{shown}`" in row for row in rows), f"README has no row with a core PR link for {key}"
