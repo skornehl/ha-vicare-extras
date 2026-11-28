@@ -37,6 +37,22 @@
     "core_internals_changed": {
       "title": "ViCare Extras kann die ViCare-Integration nicht lesen",
       "description": "Der interne Aufbau der ViCare-Integration hat sich geändert (vermutlich durch ein Home-Assistant-Update), deshalb kann ViCare Extras ihre Daten nicht mehr lesen. Die ViCare-Integration selbst ist davon nicht betroffen. Bitte ViCare Extras aktualisieren. Fehler: {error}"
+    },
+    "core_takeover": {
+      "title": "Werte von ViCare Extras sind jetzt in der ViCare-Integration",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Entitäts-IDs an die ViCare-Integration übergeben",
+            "description": "Die ViCare-Integration liefert diese Werte jetzt selbst, deshalb hat ViCare Extras seine eigenen Entitäten entfernt:\n\n{moves}\n\nAutomationen, Skripte und Dashboards mit einer alten Entitäts-ID bekommen keinen Wert mehr. **Übernehmen** gibt jeder ViCare-Entität die alte Entitäts-ID (links vom Pfeil). Danach funktionieren sie ohne Änderung wieder, und der Verlauf der alten Entitäts-ID läuft weiter. Name, Symbol, Bereich und Labels der Extras-Entität gehen an die ViCare-Entität, sofern sie keine eigenen hat.\n\nAutomationen und Skripte mit den alten Entitäts-IDs: {old_used_by}\n\nAutomationen und Skripte, die schon die neuen Entitäts-IDs nutzen und dann zurückgestellt werden müssten: {core_used_by}",
+            "submit": "Übernehmen"
+          }
+        },
+        "abort": {
+          "nothing_to_move": "Es gibt nichts mehr zu übergeben.",
+          "not_all_moved": "Diese Entitäts-IDs konnten nicht übergeben werden, weil die ViCare-Entität fehlt oder eine andere Entität die alte Entitäts-ID schon nutzt:\n\n{skipped}\n\nDie Reparatur bleibt für sie offen."
+        }
+      }
     }
   },
   "exceptions": {

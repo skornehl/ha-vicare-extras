@@ -179,8 +179,27 @@ Some values stay in Extras next to a core entity, because the core shows less:
   last stops, the burner runtime and the stops during hot water heating stay
   in Extras.
 
-Automations that use the Extras entity IDs have to be switched to the core
-entities after the update.
+### Keeping the entity IDs
+
+When ViCare Extras removes an entity that the core took over, it raises a
+repair: Settings -> System -> Repairs -> **ViCare Extras values moved into the
+ViCare integration**. The repair lists each old Extras entity ID with the core
+entity that has the value now, and the automations and scripts that use
+either of them. **Hand on** gives each core entity the old Extras entity ID, so
+automations, scripts and dashboards keep working without changes. Name, icon,
+area and labels you gave the Extras entity go to the core entity, unless it
+has its own.
+
+Nothing is renamed without that click: the core entity ID may be one you
+chose, and automations may already use it. If you ignore the repair, switch
+your automations to the core entities yourself.
+
+The history of the old entity ID goes on under the core entity. The few
+values the core entity recorded under its own ID before the repair stay
+there; the recorder logs that it cannot move them, because the old entity ID
+already has a history. Disabled Extras entities and generic diagnostics are
+not listed. A move is skipped, and stays in the repair, while the core entity
+is missing or another entity uses the old entity ID.
 
 ## Devices, data and availability
 

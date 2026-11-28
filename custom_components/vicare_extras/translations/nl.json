@@ -37,6 +37,22 @@
     "core_internals_changed": {
       "title": "ViCare Extras kan de ViCare-integratie niet lezen",
       "description": "De interne opbouw van de ViCare-integratie is gewijzigd (waarschijnlijk door een update van Home Assistant), daardoor kan ViCare Extras de gegevens niet meer lezen. De ViCare-integratie zelf werkt gewoon. Werk ViCare Extras bij. Fout: {error}"
+    },
+    "core_takeover": {
+      "title": "Waarden van ViCare Extras zitten nu in de ViCare-integratie",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Entiteit-ID's overdragen aan de ViCare-integratie",
+            "description": "De ViCare-integratie levert deze waarden nu zelf, daarom heeft ViCare Extras zijn eigen entiteiten verwijderd:\n\n{moves}\n\nAutomatiseringen, scripts en dashboards met een oude entiteit-ID krijgen geen waarde meer. **Overdragen** geeft elke ViCare-entiteit de oude entiteit-ID (links van de pijl). Daarna werken ze zonder wijziging weer, en de geschiedenis van de oude entiteit-ID loopt door. Naam, pictogram, ruimte en labels van de Extras-entiteit gaan naar de ViCare-entiteit, tenzij die eigen heeft.\n\nAutomatiseringen en scripts met de oude entiteit-ID's: {old_used_by}\n\nAutomatiseringen en scripts die de nieuwe entiteit-ID's al gebruiken en dan terug moeten worden gezet: {core_used_by}",
+            "submit": "Overdragen"
+          }
+        },
+        "abort": {
+          "nothing_to_move": "Er is niets meer over te dragen.",
+          "not_all_moved": "Deze entiteit-ID's konden niet worden overgedragen, omdat de ViCare-entiteit ontbreekt of een andere entiteit de oude entiteit-ID al gebruikt:\n\n{skipped}\n\nDe reparatie blijft voor hen open."
+        }
+      }
     }
   },
   "exceptions": {
