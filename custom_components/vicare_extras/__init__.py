@@ -16,6 +16,7 @@ from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import (
     config_validation as cv,
     device_registry as dr,
+    entity_registry as er,
     issue_registry as ir,
 )
 from homeassistant.helpers.typing import ConfigType
@@ -27,7 +28,14 @@ from .coordinator import (
     ViCareExtrasCoordinator,
     all_vicare_entries_loaded,
 )
-from .core_overlap import async_core_keys, remove_orphaned_entities, unique_ids
+from .core_overlap import (
+    ISSUE_CORE_TAKEOVER,
+    async_core_keys,
+    async_report_takeover,
+    remove_orphaned_entities,
+    takeover_targets,
+    unique_ids,
+)
 from .entity import device_specs
 from .hygiene import hygiene_keys
 from .services import async_register_services
@@ -100,15 +108,22 @@ def _async_cleanup_registries(
     """Remove entities and devices that are no longer provided.
 
     Entities: only for devices whose data is present right now, never because
-    of an empty or failed snapshot. Devices: only when every core ViCare entry
-    is loaded, so a device of a temporarily failing entry is kept.
+    of an empty or failed snapshot. An entity the core took over gets a repair
+    issue that hands its entity ID on to the core entity. Devices: only when
+    every core ViCare entry is loaded, so a device of a temporarily failing
+    entry is kept.
     """
     present = {
         identifier: expected_unique_ids(coordinator, identifier)
         for identifier, dev in coordinator.data.items()
         if dev.features
     }
-    remove_orphaned_entities(hass, entry.entry_id, present)
+    entity_registry = er.async_get(hass)
+    targets: dict[str, tuple[str, str]] = {}
+    for identifier in present:
+        targets |= takeover_targets(entity_registry, identifier, coordinator.core_keys)
+    removed = remove_orphaned_entities(hass, entry.entry_id, present)
+    async_report_takeover(hass, removed, targets)
 
     if not all_vicare_entries_loaded(hass):
         return
@@ -141,5 +156,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: ViCareExtrasConfigEntry
 
 
 async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    """Clean up the repair issue when the integration is removed."""
+    """Clean up the repair issues when the integration is removed."""
     ir.async_delete_issue(hass, DOMAIN, ISSUE_INTERNALS)
+    ir.async_delete_issue(hass, DOMAIN, ISSUE_CORE_TAKEOVER)

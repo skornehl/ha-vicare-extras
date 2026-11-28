@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from types import SimpleNamespace
 
 import pytest
@@ -212,12 +213,66 @@ async def test_remove_orphaned_entities(monkeypatch) -> None:
     monkeypatch.setattr(co.er, "async_entries_for_config_entry", lambda reg, entry_id: entries)
     removed = co.remove_orphaned_entities(None, "entry", {"dev1": {"dev1-extras-keep"}})
     # dev2 / dev10 have no current data here: never touched.
-    assert removed == ["sensor.pump_current"]
+    assert [entity.entity_id for entity in removed] == ["sensor.pump_current"]
     assert registry.removed == ["sensor.pump_current"]
 
 
 async def test_unique_ids() -> None:
     assert co.unique_ids("dev", ["a", "b"]) == {"dev-extras-a", "dev-extras-b"}
+
+
+async def test_takeover_targets_name_one_core_entity_each() -> None:
+    registry = _Registry(
+        [
+            _entry("binary_sensor.pump", "vicare", "gw_dev-boiler_internal_pump_active"),
+            _entry("sensor.supply_1", "vicare", "gw_dev-target_supply_temperature-1"),
+            # Two burners: the device value has no single core entity.
+            _entry("sensor.stops_0", "vicare", "gw_dev-burner_stops_normal_stop-0"),
+            _entry("sensor.stops_1", "vicare", "gw_dev-burner_stops_normal_stop-1"),
+            # A disabled core entity takes nothing over.
+            SimpleNamespace(
+                entity_id="sensor.target",
+                domain="sensor",
+                platform="vicare",
+                unique_id="gw_dev-boiler_target_temperature",
+                disabled_by="user",
+            ),
+        ]
+    )
+    core_keys = frozenset(
+        {
+            ("binary_sensor", "boiler_internal_pump_active"),
+            ("sensor", "target_supply_temperature"),
+            ("sensor", "burner_stops_normal_stop"),
+            ("sensor", "boiler_target_temperature"),
+        }
+    )
+    assert co.takeover_targets(registry, "gw_dev", core_keys) == {
+        "gw_dev-extras-boiler_pump_internal": ("binary_sensor", "gw_dev-boiler_internal_pump_active"),
+        "gw_dev-extras-circuit_1_target_supply_temperature": (
+            "sensor",
+            "gw_dev-target_supply_temperature-1",
+        ),
+    }
+    # A core without the description keys takes nothing over.
+    assert co.takeover_targets(registry, "gw_dev", frozenset()) == {}
+    assert co.takeover_targets(registry, "gw_other", core_keys) == {}
+
+
+async def test_issue_moves_survive_broken_data() -> None:
+    move = {"old": "sensor.a", "domain": "sensor", "unique_id": "dev-a", "core": "sensor.b"}
+    assert co.issue_moves({"moves": json.dumps([move, {"old": ""}, "x"])}) == [move]
+    for data in (None, {}, {"moves": None}, {"moves": "not json"}, {"moves": 3}):
+        assert co.issue_moves(data) == []
+
+
+async def test_format_moves() -> None:
+    moves = [
+        {"old": "sensor.a", "domain": "sensor", "unique_id": "dev-a", "core": "sensor.b"},
+        {"old": "sensor.c", "domain": "sensor", "unique_id": "dev-c", "core": None},
+    ]
+    assert co.format_moves(moves) == "- `sensor.a` → `sensor.b`\n- `sensor.c` → `dev-c`"
+    assert co.format_moves(moves, {"sensor.a": "sensor.new"}).startswith("- `sensor.a` → `sensor.new`")
 
 
 # The values of the core pull requests in CORE_TAKEOVER and CORE_TAKEOVER_CIRCUITS,

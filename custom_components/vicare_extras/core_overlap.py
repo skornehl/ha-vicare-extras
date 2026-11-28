@@ -17,6 +17,11 @@ Then the curated Extras entity is not created and its feature is not offered
 as a generic diagnostic either, so nothing shows up twice. With an older core,
 or a device the core does not support the value for, everything stays.
 
+An Extras entity that was in use is removed from the entity registry and
+listed in the repair issue `core_takeover`. Its fix (repairs.py) gives the
+core entity the old entity ID. Generic diagnostics are not listed: their
+properties do not map to one core entity, and they are disabled by default.
+
 A value of a heating circuit (CORE_TAKEOVER_CIRCUITS) is checked per circuit:
 the core names its entity `<device>-<key>-<circuit>`, and only the circuits
 it created are left out of Extras.
@@ -34,17 +39,23 @@ has the description key and creates the entity.
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
+import json
 import logging
 import re
 from types import ModuleType
+from typing import Any
 
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers import entity_registry as er, issue_registry as ir
 from homeassistant.loader import async_get_integration
 
-from .const import VICARE_DOMAIN
+from .const import DOMAIN, VICARE_DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
+
+# Repair issue for Extras entities the core took over, fixed in repairs.py.
+ISSUE_CORE_TAKEOVER = "core_takeover"
+DOCUMENTATION_URL = "https://github.com/skornehl/ha-vicare-extras"
 
 CORE_PLATFORMS = ("sensor", "binary_sensor")
 
@@ -285,20 +296,49 @@ def device_overlap(hass: HomeAssistant, core_keys: CoreKeys, identifier: str) ->
     )
 
 
+def takeover_targets(
+    registry: er.EntityRegistry, identifier: str, core_keys: CoreKeys
+) -> dict[str, tuple[str, str]]:
+    """Return Extras unique ID -> (domain, unique ID) of the core entity that took it over.
+
+    Only enabled core entities count, as in core_entity_exists(). A value
+    the core created more than once for the device (several burners, ...)
+    has no single target and is left out.
+    """
+    targets: dict[str, tuple[str, str]] = {}
+    for extras_key, (platform, core_key, _) in CORE_TAKEOVER.items():
+        if (platform, core_key) not in core_keys:
+            continue
+        unique_id = f"{identifier}-{core_key}"
+        entries = list(_enabled_core_entries(registry, platform, unique_id))
+        exact = [entry for entry in entries if entry.unique_id == unique_id]
+        if len(exact or entries) == 1:
+            targets[f"{identifier}-extras-{extras_key}"] = (platform, (exact or entries)[0].unique_id)
+    for extras_key, (platform, core_key, _) in CORE_TAKEOVER_CIRCUITS.items():
+        if (platform, core_key) not in core_keys:
+            continue
+        for circuit in core_components(registry, identifier, platform, core_key):
+            targets[f"{identifier}-extras-{extras_key.format(circuit=circuit)}"] = (
+                platform,
+                f"{identifier}-{core_key}-{circuit}",
+            )
+    return targets
+
+
 def remove_orphaned_entities(
     hass: HomeAssistant,
     entry_id: str,
     expected: dict[str, set[str]],
-) -> list[str]:
+) -> list[er.RegistryEntry]:
     """Remove registry entries of this config entry that are no longer produced.
 
     `expected` maps a device identifier to the unique IDs the integration
     creates for it right now. Only devices in `expected` are touched; callers
     must pass only devices whose data is currently present, never decide on
-    an empty or failed snapshot. Returns the removed entity IDs.
+    an empty or failed snapshot. Returns the removed registry entries.
     """
     registry = er.async_get(hass)
-    removed: list[str] = []
+    removed: list[er.RegistryEntry] = []
     prefixes = {identifier: f"{identifier}-extras-" for identifier in expected}
     for entity in list(er.async_entries_for_config_entry(registry, entry_id)):
         for identifier, prefix in prefixes.items():
@@ -309,9 +349,94 @@ def remove_orphaned_entities(
                     entity.entity_id,
                 )
                 registry.async_remove(entity.entity_id)
-                removed.append(entity.entity_id)
+                removed.append(entity)
                 break
     return removed
+
+
+def async_report_takeover(
+    hass: HomeAssistant,
+    removed: Iterable[er.RegistryEntry],
+    targets: dict[str, tuple[str, str]],
+) -> list[dict[str, Any]]:
+    """Raise the repair issue for removed Extras entities the core took over.
+
+    One issue for the integration lists every move: the removed Extras entity
+    ID and the core entity that has the value now. Its fix flow (repairs.py)
+    gives each core entity the old entity ID, so automations, scripts,
+    dashboards and the history keep working. Moves of an issue that is still
+    open are kept. Disabled Extras entities are left out (nothing used them),
+    and so are core entities of another domain, which cannot take the ID.
+    Returns the new moves.
+    """
+    registry = er.async_get(hass)
+    new: list[dict[str, Any]] = []
+    for entity in removed:
+        target = targets.get(entity.unique_id)
+        if target is None or entity.disabled_by is not None:
+            continue
+        domain, unique_id = target
+        if entity.domain != domain:
+            continue
+        new.append(
+            {
+                "old": entity.entity_id,
+                "domain": domain,
+                "unique_id": unique_id,
+                "core": registry.async_get_entity_id(domain, VICARE_DOMAIN, unique_id),
+                # Settings the user gave the Extras entity, handed on by the fix.
+                "name": entity.name,
+                "icon": entity.icon,
+                "area_id": entity.area_id,
+                "labels": sorted(entity.labels),
+            }
+        )
+    if not new:
+        return new
+    issues = ir.async_get(hass)
+    existing = issues.async_get_issue(DOMAIN, ISSUE_CORE_TAKEOVER)
+    moves = {move["old"]: move for move in issue_moves(existing.data if existing else None)}
+    moves.update({move["old"]: move for move in new})
+    async_create_takeover_issue(hass, list(moves.values()))
+    return new
+
+
+def issue_moves(data: dict[str, Any] | None) -> list[dict[str, Any]]:
+    """Return the moves stored in the data of the repair issue."""
+    try:
+        moves = json.loads((data or {}).get("moves") or "[]")
+    except (TypeError, ValueError):
+        return []
+    return [move for move in moves if isinstance(move, dict) and move.get("old")]
+
+
+def async_create_takeover_issue(hass: HomeAssistant, moves: list[dict[str, Any]]) -> None:
+    """Create or replace the repair issue with these moves."""
+    ir.async_create_issue(
+        hass,
+        DOMAIN,
+        ISSUE_CORE_TAKEOVER,
+        # Issue data only holds scalars, so the moves are stored as JSON.
+        data={"moves": json.dumps(moves)},
+        is_fixable=True,
+        is_persistent=True,
+        severity=ir.IssueSeverity.WARNING,
+        translation_key=ISSUE_CORE_TAKEOVER,
+        learn_more_url=f"{DOCUMENTATION_URL}#values-that-moved-into-the-core-integration",
+    )
+
+
+def format_moves(moves: Iterable[dict[str, Any]], core: dict[str, str | None] | None = None) -> str:
+    """Return one Markdown line per move: old Extras entity ID -> core entity ID.
+
+    `core` maps the old entity ID to the current core entity ID; without it
+    the core entity ID stored with the move is shown.
+    """
+    lines = []
+    for move in moves:
+        target = (core or {}).get(move["old"], move.get("core"))
+        lines.append(f"- `{move['old']}` → `{target or move['unique_id']}`")
+    return "\n".join(lines)
 
 
 def unique_ids(identifier: str, keys: Iterable[str]) -> set[str]:

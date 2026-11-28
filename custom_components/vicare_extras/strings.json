@@ -37,6 +37,22 @@
     "core_internals_changed": {
       "title": "ViCare Extras cannot read the ViCare integration",
       "description": "The internal structure of the core ViCare integration changed (probably after a Home Assistant update), so ViCare Extras cannot read its data any more. The core integration itself is unaffected. Please update ViCare Extras. Error: {error}"
+    },
+    "core_takeover": {
+      "title": "ViCare Extras values moved into the ViCare integration",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Hand the entity IDs on to the ViCare integration",
+            "description": "The core ViCare integration now provides these values, so ViCare Extras removed its own entities:\n\n{moves}\n\nAutomations, scripts and dashboards that use an old entity ID no longer get a value. **Hand on** gives each ViCare entity the old entity ID (left of the arrow). Then they work again without changes, and the history of the old entity ID goes on. A name, icon, area or labels of the Extras entity go to the ViCare entity, unless it has its own.\n\nAutomations and scripts that use the old entity IDs: {old_used_by}\n\nAutomations and scripts that already use the new entity IDs and would have to be changed back: {core_used_by}",
+            "submit": "Hand on"
+          }
+        },
+        "abort": {
+          "nothing_to_move": "There is nothing left to hand on.",
+          "not_all_moved": "These entity IDs could not be handed on, because the ViCare entity is gone or another entity already uses the old entity ID:\n\n{skipped}\n\nThe repair stays open for them."
+        }
+      }
     }
   },
   "exceptions": {
